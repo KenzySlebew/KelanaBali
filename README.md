@@ -1,20 +1,6 @@
 # 🌴 KelanaBali — Visual-First Travel Hub untuk Wisatawan Muda
 
 > **"Bali's Calling — Let's Vibe And Explore Together"**  
-> Web application responsif berbasis **Next.js 15 (App Router)** & **Tailwind CSS**, dikembangkan berdasarkan desain visual dan spesifikasi Stitch project **KelanaBali Travel Landing Page**.
-
----
-
-## 📸 Stitch Source Screens
-
-Data visual, styling token, dan aset grafis diambil dari proyek Stitch:
-- **Project Title:** KelanaBali Travel Landing Page
-- **Project ID:** `8634551969823395590`
-
-| Screen | Stitch Screen ID | Output Asset |
-| :--- | :--- | :--- |
-| **KelanaBali - Desktop Landing Page** | `49c2182e85024c32a454ec0afbcde52d` | `stitch_assets/desktop_landing.html` & `desktop_screenshot.png` |
-| **KelanaBali - Mobile Landing Page** | `8253b3efad9d4208bd934ce052940e41` | `stitch_assets/mobile_landing.html` & `mobile_screenshot.png` |
 
 ---
 
@@ -55,64 +41,3 @@ Data visual, styling token, dan aset grafis diambil dari proyek Stitch:
 
 9. **Mobile Bottom Navigation (`src/components/MobileBottomNav.tsx`)**
    - Bottom app bar sticky di layar mobile untuk akses instan ke Home, Explore, Tanya Mimin, dan Wishlist.
-
----
-
-## 🚀 Menjalankan Proyek Secara Lokal
-
-### Prasyarat
-- Node.js v18.17+ atau v20+ / v22+
-- npm v10+
-
-### Instalasi & Menjalankan Dev Server
-```bash
-# 1. Masuk ke direktori proyek
-cd "d:\KelanaBali-Web App"
-
-# 2. Jalankan development server
-npm run dev
-```
-
-Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
-
-### Production Build
-```bash
-npm run build
-npm run start
-```
-
----
-
-## 📁 Struktur Direktori
-
-```text
-KelanaBali-Web App/
-├── public/
-│   ├── images/               # 29 Aset foto yang diunduh dari Stitch
-│   └── screenshots/          # Screenshot high-res desktop & mobile dari Stitch
-├── src/
-│   ├── app/
-│   │   ├── globals.css       # Styling Tailwind & custom utilities
-│   │   ├── layout.tsx        # Google Fonts (Inter, Newsreader, Caveat) & metadata
-│   │   └── page.tsx          # Komposisi halaman utama landing page
-│   ├── components/           # Komponen modular Next.js
-│   │   ├── Navbar.tsx
-│   │   ├── Hero.tsx
-│   │   ├── Stats.tsx
-│   │   ├── ExploreCarousel.tsx
-│   │   ├── HowItWorks.tsx
-│   │   ├── FomoBanner.tsx
-│   │   ├── ArticlesSection.tsx
-│   │   ├── ClosingCTA.tsx
-│   │   ├── Footer.tsx
-│   │   ├── MobileBottomNav.tsx
-│   │   ├── SpotModal.tsx
-│   │   └── MiminModal.tsx
-│   └── data/
-│       └── mockData.ts       # Data spot, vibe, artikel, dan tips lokal
-├── stitch_assets/            # File HTML & PNG mentah hasil unduhan Stitch
-├── PRD KelanaBali ...md      # Product Requirements Document
-├── tailwind.config.ts        # Design tokens KelanaBali
-└── package.json
-```
-

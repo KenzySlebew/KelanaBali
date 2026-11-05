@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronDown, Sparkles, CheckCircle2, MessageCircle } from "lucide-react";
 
 interface HowItWorksProps {
@@ -97,16 +98,23 @@ export default function HowItWorks({ onOpenMimin }: HowItWorksProps) {
                   {isExpanded && (
                     <div className="mt-3 pl-6 sm:pl-7 pt-2 border-t border-gray-200/50 text-xs sm:text-sm text-brand-secondary leading-relaxed space-y-3 animate-in fade-in duration-200">
                       <p>{step.description}</p>
-                      <div className="pt-1">
+                      <div className="pt-1 flex flex-wrap items-center gap-3">
+                        <Link
+                          href="/planner"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-dark text-white text-xs font-bold hover:bg-black transition"
+                        >
+                          <span>Mulai di Planner</span>
+                          <span>→</span>
+                        </Link>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onOpenMimin();
                           }}
-                          className="inline-flex items-center gap-2 text-xs font-bold text-brand-deepTeal hover:text-brand-teal transition"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-deepTeal hover:text-brand-teal transition"
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
-                          <span>Konsultasi langkah ini ke Mimin →</span>
+                          <span>Tanya Mimin</span>
                         </button>
                       </div>
                     </div>

@@ -2,7 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Eye, Bookmark, Sparkles, MapPin } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Eye, Bookmark, Sparkles, MapPin, ArrowRight } from "lucide-react";
 import { Spot, SPOTS_DATA, BEACH_SPOTS, CULTURE_SPOTS } from "@/data/mockData";
 
 interface ExploreCarouselProps {
@@ -101,11 +102,20 @@ export default function ExploreCarousel({
       </div>
 
       {/* Section Sub-header & Carousel Controls */}
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-            Yuk, Explore Sekarang!
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
+              Yuk, Explore Sekarang!
+            </h2>
+            <Link
+              href="/explore"
+              className="hidden md:inline-flex items-center gap-1 text-xs font-bold text-brand-deepTeal hover:text-brand-teal transition px-3 py-1 rounded-full bg-teal-50 border border-brand-teal/20"
+            >
+              <span>Semua Spot di Peta</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
           <p className="text-xs sm:text-sm text-brand-secondary mt-1">
             Klik kartu untuk lihat tiket, jam terbaik & tips rahasia mimin
           </p>

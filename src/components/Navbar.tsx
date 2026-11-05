@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, MessageCircle, Volume2, VolumeX } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, MessageCircle, Volume2, VolumeX, Sparkles } from "lucide-react";
 import { LiquidNavbar, LiquidNavItem, NimbusIcons } from "@/components/ui/liquid-glass-navbar";
 
 interface NavbarProps {
@@ -10,71 +11,86 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onOpenMimin }: NavbarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Set default active based on current route
+  useEffect(() => {
+    if (pathname === "/explore") {
+      setActiveIndex(1);
+    } else if (pathname === "/planner") {
+      setActiveIndex(2);
+    } else if (pathname === "/") {
+      setActiveIndex(0);
+    }
+  }, [pathname]);
+
   const navItems: LiquidNavItem[] = [
     {
       label: "Home",
-      href: "#",
+      href: "/",
       icon: NimbusIcons.home,
       fx: "glow",
     },
     {
       label: "Explore",
-      href: "#explore",
+      href: "/explore",
       icon: NimbusIcons.globe,
       fx: "spin",
     },
     {
-      label: "Cara Seru",
-      href: "#cara-seru",
+      label: "Planner",
+      href: "/planner",
       icon: NimbusIcons.plane,
       fx: "plane",
     },
     {
       label: "Artikel",
-      href: "#artikel",
+      href: "/#artikel",
       icon: NimbusIcons.drop,
       fx: "drop",
     },
     {
       label: "Galeri",
-      href: "#cara-seru",
+      href: "/#cara-seru",
       icon: NimbusIcons.user,
       fx: "wave",
     },
   ];
 
-  // Scroll detection to enhance sticky navbar elevation & blur
+  // Scroll detection to enhance sticky navbar elevation & blur on homepage
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      // Automatic section spy to keep Liquid Navbar droplet in sync with scroll position
-      const sections = [
-        { id: "hero", index: 0 },
-        { id: "explore", index: 1 },
-        { id: "cara-seru", index: 2 },
-        { id: "artikel", index: 3 },
-      ];
+      // Only run auto scroll spy if on the homepage
+      if (pathname === "/") {
+        const sections = [
+          { id: "hero", index: 0 },
+          { id: "explore", index: 1 },
+          { id: "cara-seru", index: 2 },
+          { id: "artikel", index: 3 },
+        ];
 
-      const scrollPosition = window.scrollY + 200;
+        const scrollPosition = window.scrollY + 200;
 
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const sec = sections[i];
-        if (sec.id === "hero") {
-          if (window.scrollY < 300) {
-            setActiveIndex(0);
-            break;
-          }
-        } else {
-          const el = document.getElementById(sec.id);
-          if (el && el.offsetTop <= scrollPosition) {
-            setActiveIndex(sec.index);
-            break;
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const sec = sections[i];
+          if (sec.id === "hero") {
+            if (window.scrollY < 300) {
+              setActiveIndex(0);
+              break;
+            }
+          } else {
+            const el = document.getElementById(sec.id);
+            if (el && el.offsetTop <= scrollPosition) {
+              setActiveIndex(sec.index);
+              break;
+            }
           }
         }
       }
@@ -82,26 +98,36 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
   const handleNavChange = (index: number, item: LiquidNavItem) => {
     setActiveIndex(index);
-    if (item.href) {
-      if (item.href === "#") {
+    if (!item.href) return;
+
+    if (item.href === "/") {
+      if (pathname === "/") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        const targetId = item.href.replace("#", "");
-        const element = document.getElementById(targetId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
+        router.push("/");
+      }
+    } else if (item.href === "/explore") {
+      router.push("/explore");
+    } else if (item.href === "/planner") {
+      router.push("/planner");
+    } else if (item.href.startsWith("/#")) {
+      const targetId = item.href.replace("/#", "");
+      if (pathname === "/") {
+        const el = document.getElementById(targetId);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push(item.href);
       }
     }
   };
 
   return (
     <header
-      className={`sticky top-2 sm:top-4 z-40 mb-3 pt-1 transition-all duration-300 ${
+      className={`sticky top-2 sm:top-4 z-40 mb-4 pt-1 transition-all duration-300 ${
         isScrolled ? "scale-[0.99] sm:scale-100" : ""
       }`}
       data-purpose="main-header"
@@ -111,7 +137,7 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
         className={`w-full flex items-center justify-between py-2 sm:py-2.5 px-4 sm:px-6 md:px-7 rounded-full border transition-all duration-300 ${
           isScrolled
             ? "bg-white/90 backdrop-blur-2xl border-gray-200/90 shadow-float"
-            : "bg-white/75 backdrop-blur-xl border-gray-100/80 shadow-soft"
+            : "bg-white/80 backdrop-blur-xl border-gray-100/90 shadow-soft"
         }`}
       >
         {/* Brand Logo */}
@@ -214,33 +240,29 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
 
           <div className="flex flex-col gap-2 text-sm font-medium text-brand-dark">
             <Link
-              href="#explore"
+              href="/explore"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-xl hover:bg-brand-surface transition flex items-center justify-between"
             >
               <span>Explore Spots</span>
-              <span className="text-xs text-brand-teal">50+ Spot</span>
+              <span className="text-xs text-brand-teal font-semibold">50+ Spot Terkurasi</span>
             </Link>
             <Link
-              href="#cara-seru"
+              href="/planner"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl hover:bg-brand-surface transition"
+              className="px-3 py-2 rounded-xl hover:bg-brand-surface transition flex items-center justify-between"
             >
-              Cara Seru Explore Bali
+              <span>Trip Planner 3 Langkah</span>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-teal-50 text-brand-deepTeal border border-brand-teal/20">
+                Anti Wacana
+              </span>
             </Link>
             <Link
-              href="#artikel"
+              href="/#artikel"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-xl hover:bg-brand-surface transition"
             >
               Artikel & Rekomendasi
-            </Link>
-            <Link
-              href="#kontak"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-xl hover:bg-brand-surface transition"
-            >
-              Hubungi Kami
             </Link>
             <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
               <button

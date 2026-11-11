@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 interface ClosingCTAProps {
   onOpenMimin: () => void;
@@ -34,8 +34,9 @@ export default function ClosingCTA({ onOpenMimin }: ClosingCTAProps) {
         {/* Dark Pill CTA */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
+            type="button"
             onClick={onOpenMimin}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold tracking-wide hover:bg-black transition-all shadow-md hover:shadow-lg"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold tracking-wide hover:bg-black transition-all shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           >
             <MessageCircle className="w-4 h-4 text-brand-teal" />
             <span>Chat WhatsApp Mimin</span>
@@ -50,4 +51,3 @@ export default function ClosingCTA({ onOpenMimin }: ClosingCTAProps) {
     </section>
   );
 }
-

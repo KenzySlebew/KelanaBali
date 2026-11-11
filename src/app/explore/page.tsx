@@ -11,7 +11,7 @@ import WishlistDrawer from "@/components/WishlistDrawer";
 import BaliInteractiveMap from "@/components/explore/BaliInteractiveMap";
 import SpotGridCard from "@/components/explore/SpotGridCard";
 import { ALL_SPOTS, Spot } from "@/data/mockData";
-import { Search, SlidersHorizontal, RotateCcw, ArrowRight, Sparkles, Compass } from "lucide-react";
+import { Search, SlidersHorizontal, RotateCcw, ArrowRight, Compass } from "lucide-react";
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -153,8 +153,12 @@ export default function ExplorePage() {
             </div>
 
             <button
-              onClick={() => {}}
-              className="px-8 py-3.5 rounded-full bg-brand-pillDark text-white text-xs sm:text-sm font-bold hover:bg-black transition shadow-sm hover:shadow"
+              type="button"
+              onClick={() => {
+                const gridEl = document.getElementById("explore-results");
+                if (gridEl) gridEl.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="px-8 py-3.5 rounded-full bg-brand-pillDark text-white text-xs sm:text-sm font-bold hover:bg-black transition shadow-sm hover:shadow focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
             >
               Cari Spot
             </button>
@@ -250,7 +254,7 @@ export default function ExplorePage() {
         </section>
 
         {/* Main Content Layout: 65% Grid / 35% Sticky Map Panel */}
-        <section className="py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <section id="explore-results" className="py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Listing Column (65% width / 8 cols) */}
           <div className="lg:col-span-8 space-y-6">
             {/* Status & Results Counter */}
@@ -282,8 +286,9 @@ export default function ExplorePage() {
                   Coba ubah kata kunci pencarian atau reset filter untuk melihat spot rekomendasi lainnya.
                 </p>
                 <button
+                  type="button"
                   onClick={handleResetFilters}
-                  className="px-5 py-2.5 rounded-full bg-brand-teal text-brand-dark text-xs font-bold"
+                  className="px-5 py-2.5 rounded-full bg-brand-teal text-brand-dark text-xs font-bold hover:bg-teal-400 transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
                 >
                   Reset Semua Filter
                 </button>
@@ -305,7 +310,7 @@ export default function ExplorePage() {
               </div>
             )}
 
-            {/* Quick Banner Prompt to Planner Wizard */}
+            {/* Quick Banner Prompt to Planner Wizard & Itinerary */}
             <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-brand-dark to-[#162B2B] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft">
               <div className="space-y-1.5 text-center sm:text-left">
                 <span className="text-[10px] uppercase font-bold tracking-widest text-brand-teal block">
@@ -315,17 +320,26 @@ export default function ExplorePage() {
                   Sudah nemu spot yang kamu suka?
                 </h3>
                 <p className="text-xs sm:text-sm text-white/80 max-w-md">
-                  Gas susun jadi itinerary harian otomatis tanpa bentrok wilayah di Trip Planner 3 Langkah!
+                  Gas susun jadi itinerary harian otomatis tanpa bentrok wilayah atau langsung atur rute interaktif!
                 </p>
               </div>
 
-              <Link
-                href="/planner"
-                className="group flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand-teal hover:bg-white text-brand-dark font-bold text-xs sm:text-sm transition-all shadow-md"
-              >
-                <span>Buka Trip Planner</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
+                <Link
+                  href="/planner"
+                  className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-brand-teal hover:bg-white text-brand-dark font-bold text-xs sm:text-sm transition-all shadow-md focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
+                >
+                  <span>Buka Trip Planner</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  href="/itinerary"
+                  className="w-full sm:w-auto group inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm transition-all border border-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
+                >
+                  <span>Itinerary Builder</span>
+                </Link>
+              </div>
             </div>
           </div>
 

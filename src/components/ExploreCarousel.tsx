@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Eye, Bookmark, Sparkles, MapPin, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Bookmark, MapPin, ArrowRight } from "lucide-react";
 import { Spot, SPOTS_DATA, BEACH_SPOTS, CULTURE_SPOTS } from "@/data/mockData";
 
 interface ExploreCarouselProps {
@@ -70,7 +70,7 @@ export default function ExploreCarousel({
           <p className="text-xl sm:text-2xl lg:text-[30px] leading-snug font-semibold text-gray-700">
             Mau Chill By The Beach, Vibe Sama Nature, Atau Explore Local Culture Bali?{" "}
             <span className="text-brand-secondary">
-              Don’t Worry, Mimin Got You Covered.
+              Don&rsquo;t Worry, Mimin Got You Covered.
             </span>
           </p>
         </div>
@@ -83,12 +83,13 @@ export default function ExploreCarousel({
             const isActive = activeTab === tab;
             return (
               <button
+                type="button"
                 key={tab}
                 onClick={() => {
                   setActiveTab(tab);
                   setCurrentIndex(0);
                 }}
-                className={`text-sm sm:text-base font-semibold pb-3 relative whitespace-nowrap transition-colors duration-200 ${
+                className={`text-sm sm:text-base font-semibold pb-3 relative whitespace-nowrap transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-lg ${
                   isActive
                     ? "text-brand-dark after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-brand-teal"
                     : "text-brand-secondary hover:text-brand-dark"
@@ -128,26 +129,28 @@ export default function ExploreCarousel({
           </span>
           <div className="flex items-center gap-1.5">
             <button
+              type="button"
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 flex items-center justify-center transition ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                 currentIndex === 0
                   ? "opacity-35 cursor-not-allowed"
                   : "hover:bg-gray-100 hover:border-gray-300 text-brand-dark"
               }`}
-              aria-label="Previous spot"
+              aria-label="Spot sebelumnya"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={handleNext}
               disabled={currentIndex === currentSpots.length - 1}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 flex items-center justify-center transition ${
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-200 flex items-center justify-center transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                 currentIndex === currentSpots.length - 1
                   ? "opacity-35 cursor-not-allowed"
                   : "hover:bg-gray-100 hover:border-gray-300 text-brand-dark"
               }`}
-              aria-label="Next spot"
+              aria-label="Spot selanjutnya"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -168,8 +171,17 @@ export default function ExploreCarousel({
           return (
             <div
               key={spot.id}
+              tabIndex={0}
+              role="button"
               onClick={() => onSelectSpot(spot)}
-              className={`group relative flex-shrink-0 w-[270px] sm:w-[300px] md:w-[320px] rounded-2xl overflow-hidden aspect-[3/4.2] shadow-sm hover:shadow-float transition-all duration-500 cursor-pointer snap-start bg-gray-100 ${
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelectSpot(spot);
+                }
+              }}
+              aria-label={`Lihat detail spot ${spot.title} di ${spot.location}`}
+              className={`group relative flex-shrink-0 w-[270px] sm:w-[300px] md:w-[320px] rounded-2xl overflow-hidden aspect-[3/4.2] shadow-sm hover:shadow-float transition-all duration-500 cursor-pointer snap-start bg-gray-100 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                 isStaggered ? "lg:translate-y-5" : ""
               }`}
             >
@@ -197,12 +209,12 @@ export default function ExploreCarousel({
                     e.stopPropagation();
                     onSaveSpot(spot);
                   }}
-                  className={`p-2 rounded-full backdrop-blur-md transition ${
+                  className={`p-2 rounded-full backdrop-blur-md transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                     isSaved
                       ? "bg-brand-teal text-white shadow-md scale-105"
                       : "bg-black/30 hover:bg-black/50 text-white"
                   }`}
-                  aria-label="Save spot to itinerary"
+                  aria-label={isSaved ? `Hapus ${spot.title} dari wishlist` : `Simpan ${spot.title} ke wishlist`}
                 >
                   <Bookmark
                     className={`w-3.5 h-3.5 ${
@@ -241,4 +253,3 @@ export default function ExploreCarousel({
     </section>
   );
 }
-

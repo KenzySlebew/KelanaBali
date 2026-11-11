@@ -22,9 +22,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "KelanaBali — Visual-First Travel Hub untuk Wisatawan Muda",
+  title: "KelanaBali: Visual-First Travel Hub untuk Wisatawan Muda",
   description:
-    "Bali's Calling — Let's Vibe And Explore Together. Panduan dan perencana perjalanan visual untuk wisatawan muda di Bali.",
+    "Bali's Calling: Let's Vibe And Explore Together. Panduan dan perencana perjalanan visual untuk wisatawan muda di Bali.",
   keywords: [
     "Bali Travel",
     "KelanaBali",

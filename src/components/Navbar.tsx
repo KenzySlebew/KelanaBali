@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, MessageCircle, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { Menu, X, MessageCircle, Volume2, VolumeX } from "lucide-react";
 import { LiquidNavbar, LiquidNavItem, NimbusIcons } from "@/components/ui/liquid-glass-navbar";
 
 interface NavbarProps {
@@ -24,6 +24,10 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
       setActiveIndex(1);
     } else if (pathname === "/planner") {
       setActiveIndex(2);
+    } else if (pathname === "/itinerary") {
+      setActiveIndex(3);
+    } else if (pathname === "/tanya-mimin") {
+      setActiveIndex(4);
     } else if (pathname === "/") {
       setActiveIndex(0);
     }
@@ -49,53 +53,43 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
       fx: "plane",
     },
     {
-      label: "Artikel",
-      href: "/#artikel",
-      icon: NimbusIcons.drop,
+      label: "Itinerary",
+      href: "/itinerary",
+      icon: NimbusIcons.map,
       fx: "drop",
     },
     {
-      label: "Galeri",
-      href: "/#cara-seru",
-      icon: NimbusIcons.user,
+      label: "Tanya Mimin",
+      href: "/tanya-mimin",
+      icon: NimbusIcons.chat,
       fx: "wave",
     },
   ];
 
-  // Scroll detection to enhance sticky navbar elevation & blur on homepage
+  // Scroll detection to enhance sticky navbar elevation & sync active bubble section on homepage
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const y = window.scrollY;
+      setIsScrolled(y > 20);
+      if (pathname !== "/") return;
 
-      // Only run auto scroll spy if on the homepage
-      if (pathname === "/") {
-        const sections = [
-          { id: "hero", index: 0 },
-          { id: "explore", index: 1 },
-          { id: "cara-seru", index: 2 },
-          { id: "artikel", index: 3 },
-        ];
+      const exploreEl = document.getElementById("explore");
+      const caraSeruEl = document.getElementById("cara-seru");
+      const kontakEl = document.getElementById("kontak");
+      const offset = y + 260;
 
-        const scrollPosition = window.scrollY + 200;
-
-        for (let i = sections.length - 1; i >= 0; i--) {
-          const sec = sections[i];
-          if (sec.id === "hero") {
-            if (window.scrollY < 300) {
-              setActiveIndex(0);
-              break;
-            }
-          } else {
-            const el = document.getElementById(sec.id);
-            if (el && el.offsetTop <= scrollPosition) {
-              setActiveIndex(sec.index);
-              break;
-            }
-          }
-        }
+      if (kontakEl && offset >= kontakEl.offsetTop) {
+        setActiveIndex(4);
+      } else if (caraSeruEl && offset >= caraSeruEl.offsetTop) {
+        setActiveIndex(2);
+      } else if (exploreEl && offset >= exploreEl.offsetTop) {
+        setActiveIndex(1);
+      } else {
+        setActiveIndex(0);
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
@@ -114,6 +108,10 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
       router.push("/explore");
     } else if (item.href === "/planner") {
       router.push("/planner");
+    } else if (item.href === "/itinerary") {
+      router.push("/itinerary");
+    } else if (item.href === "/tanya-mimin") {
+      router.push("/tanya-mimin");
     } else if (item.href.startsWith("/#")) {
       const targetId = item.href.replace("/#", "");
       if (pathname === "/") {
@@ -122,6 +120,8 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
       } else {
         router.push(item.href);
       }
+    } else {
+      router.push(item.href);
     }
   };
 
@@ -156,15 +156,15 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
           </Link>
         </div>
 
-        {/* Center: Liquid Glass Navbar (Desktop & Tablet) */}
-        <div className="hidden lg:flex items-center justify-center flex-1 mx-4">
+        {/* Center: Liquid Glass Navbar (Tablet & Desktop, always visible without hamburger click) */}
+        <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-4">
           <LiquidNavbar
             items={navItems}
             active={activeIndex}
             onChange={handleNavChange}
             tone="light"
             sound={soundEnabled}
-            className="shadow-sm"
+            className="shadow-sm nimbus-tablet-compact"
           />
         </div>
 
@@ -174,7 +174,7 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
           <button
             type="button"
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`hidden lg:flex items-center justify-center w-8 h-8 rounded-full border transition ${
+            className={`hidden md:flex items-center justify-center w-8 h-8 rounded-full border transition ${
               soundEnabled
                 ? "bg-teal-50 border-brand-teal/40 text-brand-deepTeal"
                 : "bg-gray-50 border-gray-200 text-gray-400 hover:text-brand-dark"
@@ -190,27 +190,30 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
           </button>
 
           {/* Contact Us / Tanya Mimin Button */}
-          <button
-            onClick={onOpenMimin}
-            className="hidden sm:inline-flex items-center justify-center px-5 sm:px-6 py-2.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold tracking-wide hover:bg-black transition-all duration-200 shadow-sm hover:shadow hover:scale-102"
+          <Link
+            href="/tanya-mimin"
+            className="hidden sm:inline-flex items-center justify-center px-5 sm:px-6 py-2.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold tracking-wide hover:bg-black transition-all duration-200 shadow-sm hover:shadow hover:scale-102 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           >
-            Contact Us
-          </button>
+            Tanya Mimin
+          </Link>
 
           {/* Mobile Chat Pill */}
-          <button
-            onClick={onOpenMimin}
-            className="sm:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-teal/15 text-brand-deepTeal text-xs font-semibold"
+          <Link
+            href="/tanya-mimin"
+            className="sm:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-teal/15 text-brand-deepTeal text-xs font-semibold focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             <span>Mimin</span>
-          </button>
+          </Link>
 
-          {/* Hamburger Menu Toggle (Mobile & Tablet) */}
+          {/* Hamburger Menu Toggle (Mobile only — tablet & desktop already show LiquidNavbar) */}
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-full text-brand-dark hover:bg-gray-100 transition"
-            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-panel"
+            className="md:hidden p-2 rounded-full text-brand-dark hover:bg-gray-100 transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
+            aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -221,23 +224,9 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
         </div>
       </nav>
 
-      {/* Mobile Menu Dropdown with Compact Liquid Nav */}
+      {/* Mobile Extra Links Dropdown (Mobile bottom LiquidNavbar handles main bubble nav) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden mt-2 p-5 bg-white/95 backdrop-blur-xl rounded-3xl border border-gray-100 shadow-float animate-in fade-in slide-in-from-top-2 duration-200 space-y-4">
-          <div className="flex justify-center pb-2 border-b border-gray-100">
-            <LiquidNavbar
-              items={navItems}
-              active={activeIndex}
-              onChange={(i, item) => {
-                handleNavChange(i, item);
-                setMobileMenuOpen(false);
-              }}
-              tone="light"
-              sound={soundEnabled}
-              compact={false}
-            />
-          </div>
-
+        <div id="mobile-nav-panel" className="md:hidden mt-2 p-5 bg-white/95 backdrop-blur-xl rounded-3xl border border-gray-100 shadow-float animate-in fade-in slide-in-from-top-2 duration-200 space-y-4">
           <div className="flex flex-col gap-2 text-sm font-medium text-brand-dark">
             <Link
               href="/explore"
@@ -255,6 +244,26 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
               <span>Trip Planner 3 Langkah</span>
               <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-teal-50 text-brand-deepTeal border border-brand-teal/20">
                 Anti Wacana
+              </span>
+            </Link>
+            <Link
+              href="/itinerary"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-xl hover:bg-brand-surface transition flex items-center justify-between"
+            >
+              <span>Itinerary Builder</span>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/50">
+                Interaktif
+              </span>
+            </Link>
+            <Link
+              href="/tanya-mimin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-3 py-2 rounded-xl hover:bg-brand-surface transition flex items-center justify-between"
+            >
+              <span>Tanya Mimin Hub</span>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-teal-50 text-brand-deepTeal border border-brand-teal/20">
+                Local Buddy
               </span>
             </Link>
             <Link

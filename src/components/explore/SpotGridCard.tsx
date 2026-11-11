@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Bookmark, MapPin, Eye, Clock, DollarSign, Sparkles } from "lucide-react";
+import { Bookmark, MapPin, Eye, DollarSign } from "lucide-react";
 import { Spot } from "@/data/mockData";
 
 interface SpotGridCardProps {
@@ -41,8 +41,17 @@ export default function SpotGridCard({
 
   return (
     <div
+      tabIndex={0}
+      role="button"
       onClick={() => onSelect(spot)}
-      className={`group relative rounded-2xl overflow-hidden aspect-[3/4.2] flex flex-col justify-between p-4 text-white shadow-soft hover:shadow-float transition-all duration-300 cursor-pointer border ${
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(spot);
+        }
+      }}
+      aria-label={`Pilih spot ${spot.title} di ${spot.location}`}
+      className={`group relative rounded-2xl overflow-hidden aspect-[3/4.2] flex flex-col justify-between p-4 text-white shadow-soft hover:shadow-float transition-all duration-300 cursor-pointer border focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
         isSelected
           ? "border-brand-teal ring-2 ring-brand-teal/40 scale-[1.01]"
           : "border-transparent hover:border-gray-200"
@@ -82,13 +91,13 @@ export default function SpotGridCard({
             e.stopPropagation();
             onToggleSave(spot);
           }}
-          className={`p-2 rounded-full backdrop-blur-md transition ${
+          className={`p-2 rounded-full backdrop-blur-md transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
             isSaved
               ? "bg-brand-teal text-brand-dark shadow-md scale-105"
               : "bg-black/35 hover:bg-black/55 text-white"
           }`}
           title={isSaved ? "Hapus dari Wishlist" : "Simpan ke Wishlist"}
-          aria-label="Simpan spot"
+          aria-label={isSaved ? `Hapus ${spot.title} dari Wishlist` : `Simpan ${spot.title} ke Wishlist`}
         >
           <Bookmark className={`w-3.5 h-3.5 ${isSaved ? "fill-brand-dark" : ""}`} />
         </button>
@@ -133,7 +142,7 @@ export default function SpotGridCard({
               e.stopPropagation();
               onQuickView(spot);
             }}
-            className="w-full py-2 px-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-white/20"
+            className="w-full py-2 px-3 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-white/20 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           >
             <Eye className="w-3.5 h-3.5 text-brand-teal" />
             <span>Detail & Tips Mimin</span>
@@ -143,4 +152,3 @@ export default function SpotGridCard({
     </div>
   );
 }
-

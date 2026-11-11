@@ -26,7 +26,6 @@ import {
   ArrowRight,
   MessageCircle,
   Share2,
-  Sparkles,
   MapPin,
   Clock,
   ChevronRight,
@@ -157,7 +156,7 @@ export default function PlannerPage() {
         {/* Wizard Intro Header */}
         <section className="pt-6 sm:pt-8 pb-8 text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-brand-teal/30 text-brand-deepTeal text-[11px] font-bold tracking-wider uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-brand-teal" />
+            <Compass className="w-3.5 h-3.5 text-brand-teal" />
             <span>TRIP PLANNER WIZARD · ANTI WACANA CLUB</span>
           </div>
 
@@ -261,8 +260,18 @@ export default function PlannerPage() {
                 return (
                   <div
                     key={card.id}
+                    tabIndex={0}
+                    role="button"
+                    aria-pressed={isSelected}
+                    aria-label={`Pilih vibe ${card.title}`}
                     onClick={() => handleToggleVibe(card.id)}
-                    className={`group relative rounded-2xl overflow-hidden aspect-[3/4.2] flex flex-col justify-between p-4 cursor-pointer transition-all duration-300 border ${
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleToggleVibe(card.id);
+                      }
+                    }}
+                    className={`group relative rounded-2xl overflow-hidden aspect-[3/4.2] flex flex-col justify-between p-4 cursor-pointer transition-all duration-300 border focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                       isSelected
                         ? "border-brand-teal ring-2 ring-brand-teal/50 shadow-soft scale-[1.02]"
                         : "border-gray-200 hover:border-gray-300 shadow-xs"
@@ -694,8 +703,9 @@ export default function PlannerPage() {
                   <span className="px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-brand-dark shadow-xs">
                     💰 {currentBudget.range}
                   </span>
-                  <span className="px-3 py-1.5 rounded-xl bg-teal-50 border border-brand-teal/40 text-xs font-bold text-brand-deepTeal shadow-xs">
-                    ✨ 0 Konflik Wilayah
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 border border-brand-teal/40 text-xs font-bold text-brand-deepTeal shadow-xs">
+                    <Compass className="w-3.5 h-3.5 text-brand-teal" />
+                    <span>0 Konflik Wilayah</span>
                   </span>
                 </div>
               </div>
@@ -753,18 +763,28 @@ export default function PlannerPage() {
               </div>
 
               {/* Action Buttons Bar */}
-              <div className="pt-6 border-t border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-                {/* WhatsApp Mimin Consultation */}
-                <button
-                  onClick={handleAskMiminWithPlan}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-teal-50 hover:bg-teal-100 border border-brand-teal text-brand-deepTeal text-xs sm:text-sm font-bold transition"
-                >
-                  <MessageCircle className="w-4 h-4 text-brand-teal" />
-                  <span>Minta Mimin Review Draf Ini Dulu (Gratis)</span>
-                </button>
+              <div className="pt-6 border-t border-gray-200/80 flex flex-col lg:flex-row items-center justify-between gap-4">
+                {/* Primary: Open in Itinerary Builder */}
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                  <Link
+                    href="/itinerary"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-brand-teal hover:bg-teal-300 text-brand-dark text-xs sm:text-sm font-extrabold shadow-md transition"
+                  >
+                    <span>Buka di Itinerary Builder Detail</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+
+                  <Link
+                    href="/tanya-mimin"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-teal-50 hover:bg-teal-100 border border-brand-teal text-brand-deepTeal text-xs sm:text-sm font-bold transition"
+                  >
+                    <MessageCircle className="w-4 h-4 text-brand-teal" />
+                    <span>Konsultasi Tanya Mimin Hub</span>
+                  </Link>
+                </div>
 
                 {/* Share and Reset Controls */}
-                <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-3 w-full lg:w-auto">
                   <button
                     onClick={handleCopyShareLink}
                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-white hover:bg-gray-100 border border-gray-200 text-brand-dark text-xs sm:text-sm font-bold transition shadow-xs"

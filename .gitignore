@@ -33,9 +33,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# backup & local planning docs
+.backup_pre_antislop/
+*.md
+!README.md
 
-PRD KelanaBali Visual-First Travel Hub untuk Wisatawan Muda.md
-/stitch_assets/desktop_landing.html
-/stitch_assets/mobile_landing.html
-/stitch_assets/desktop_screenshot.png
-/stitch_assets/mobile_screenshot.png
+# raw stitch exports & design references (used images live in /public/images)
+/stitch_assets/

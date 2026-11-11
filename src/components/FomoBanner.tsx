@@ -51,8 +51,9 @@ export default function FomoBanner({ onGasExplore }: FomoBannerProps) {
           </div>
 
           <button
+            type="button"
             onClick={onGasExplore}
-            className="group flex items-center gap-3 pl-5 pr-2 py-2 rounded-full bg-brand-teal text-brand-dark hover:bg-white text-xs sm:text-sm font-bold transition-all duration-300 shadow-md"
+            className="group flex items-center gap-3 pl-5 pr-2 py-2 rounded-full bg-brand-teal text-brand-dark hover:bg-white text-xs sm:text-sm font-bold transition-all duration-300 shadow-md focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           >
             <span>Gas Explore!</span>
             <span className="w-7 h-7 rounded-full bg-brand-dark text-white flex items-center justify-center group-hover:bg-brand-teal group-hover:text-brand-dark transition-colors">
@@ -64,4 +65,3 @@ export default function FomoBanner({ onGasExplore }: FomoBannerProps) {
     </section>
   );
 }
-

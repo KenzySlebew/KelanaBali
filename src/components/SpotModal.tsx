@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import { X, MapPin, Clock, DollarSign, Bookmark, MessageCircle, Star, Sparkles, AlertCircle } from "lucide-react";
+import { X, MapPin, Clock, DollarSign, Bookmark, MessageCircle, Star, Compass, AlertCircle } from "lucide-react";
 import { Spot } from "@/data/mockData";
 
 interface SpotModalProps {
@@ -20,15 +20,34 @@ export default function SpotModal({
   isSaved,
   onAskMimin,
 }: SpotModalProps) {
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    if (spot) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [spot, onClose]);
+
   if (!spot) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="spot-modal-title"
+    >
       <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto no-scrollbar shadow-float relative border border-gray-100">
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-md transition"
+          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-md transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
           aria-label="Tutup detail spot"
         >
           <X className="w-4 h-4" />
@@ -58,7 +77,7 @@ export default function SpotModal({
             <span className="text-2xl font-mono font-bold text-brand-teal block">
               Spot {spot.index}
             </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h3 id="spot-modal-title" className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               {spot.title}
             </h3>
             <div className="flex items-center gap-1.5 text-xs text-white/80 mt-1">
@@ -116,9 +135,10 @@ export default function SpotModal({
               {spot.vibe.map((v) => (
                 <span
                   key={v}
-                  className="px-3 py-1 rounded-full bg-brand-surface text-brand-deepTeal text-xs font-semibold border border-brand-teal/20"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-surface text-brand-deepTeal text-xs font-semibold border border-brand-teal/20"
                 >
-                  ✨ {v}
+                  <Compass className="w-3 h-3 text-brand-teal" />
+                  <span>{v}</span>
                 </span>
               ))}
             </div>
@@ -138,8 +158,9 @@ export default function SpotModal({
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button
+              type="button"
               onClick={() => onSaveSpot(spot)}
-              className={`flex-1 py-3 px-4 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition ${
+              className={`flex-1 py-3 px-4 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                 isSaved
                   ? "bg-brand-surface text-brand-deepTeal border border-brand-teal/40 hover:bg-gray-100"
                   : "bg-brand-pillDark text-white hover:bg-black"
@@ -150,11 +171,12 @@ export default function SpotModal({
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 onClose();
                 onAskMimin(spot.title);
               }}
-              className="py-3 px-5 rounded-full bg-brand-teal text-brand-dark hover:bg-brand-teal/90 text-xs font-bold flex items-center justify-center gap-2 transition"
+              className="py-3 px-5 rounded-full bg-brand-teal text-brand-dark hover:bg-brand-teal/90 text-xs font-bold flex items-center justify-center gap-2 transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Tanya Mimin Rute Ini</span>
@@ -165,4 +187,3 @@ export default function SpotModal({
     </div>
   );
 }
-

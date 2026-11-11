@@ -1,14 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Clock, BookOpen, X } from "lucide-react";
+import { Clock, X } from "lucide-react";
 import { ARTICLES_DATA, Article } from "@/data/mockData";
 
 export default function ArticlesSection() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   const { featured, sideArticles } = ARTICLES_DATA;
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedArticle(null);
+      }
+    };
+    if (selectedArticle) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedArticle]);
 
   return (
     <section
@@ -27,8 +40,9 @@ export default function ArticlesSection() {
           </h2>
         </div>
         <button
+          type="button"
           onClick={() => setSelectedArticle(featured)}
-          className="text-xs sm:text-sm font-bold text-brand-dark hover:text-brand-deepTeal flex items-center gap-1.5 transition group"
+          className="text-xs sm:text-sm font-bold text-brand-dark hover:text-brand-deepTeal flex items-center gap-1.5 transition group focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-lg px-2 py-1"
         >
           <span>Lihat semua</span>
           <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -39,8 +53,17 @@ export default function ArticlesSection() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Big Featured Article Card (Left) */}
         <article
+          tabIndex={0}
+          role="button"
           onClick={() => setSelectedArticle(featured)}
-          className="lg:col-span-6 group cursor-pointer"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setSelectedArticle(featured);
+            }
+          }}
+          aria-label={`Baca artikel utama: ${featured.title}`}
+          className="lg:col-span-6 group cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-2xl p-1"
         >
           <div className="rounded-2xl overflow-hidden aspect-[16/10] bg-gray-100 mb-5 relative shadow-sm group-hover:shadow-soft transition-all duration-300">
             <Image
@@ -89,8 +112,17 @@ export default function ArticlesSection() {
           {sideArticles.map((article) => (
             <article
               key={article.id}
+              tabIndex={0}
+              role="button"
               onClick={() => setSelectedArticle(article)}
-              className="group flex gap-4 sm:gap-5 items-center p-3 sm:p-4 rounded-2xl bg-white hover:bg-brand-surface border border-transparent hover:border-brand-mutedBorder transition-all duration-200 cursor-pointer shadow-none hover:shadow-card"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedArticle(article);
+                }
+              }}
+              aria-label={`Baca artikel: ${article.title}`}
+              className="group flex gap-4 sm:gap-5 items-center p-3 sm:p-4 rounded-2xl bg-white hover:bg-brand-surface border border-transparent hover:border-brand-mutedBorder transition-all duration-200 cursor-pointer shadow-none hover:shadow-card focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
             >
               {/* Thumbnail */}
               <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden relative flex-shrink-0 bg-gray-100">
@@ -129,12 +161,18 @@ export default function ArticlesSection() {
 
       {/* Article Reader Modal */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="article-modal-title"
+        >
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto no-scrollbar shadow-float relative">
             <button
+              type="button"
               onClick={() => setSelectedArticle(null)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-brand-dark transition"
-              aria-label="Close article modal"
+              className="absolute top-5 right-5 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-brand-dark transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
+              aria-label="Tutup artikel"
             >
               <X className="w-5 h-5" />
             </button>
@@ -145,7 +183,10 @@ export default function ArticlesSection() {
               </span>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-dark leading-tight mb-3">
+            <h3
+              id="article-modal-title"
+              className="text-2xl sm:text-3xl font-extrabold text-brand-dark leading-tight mb-3"
+            >
               {selectedArticle.title}
             </h3>
 
@@ -187,8 +228,9 @@ export default function ArticlesSection() {
 
             <div className="mt-8 pt-5 border-t border-gray-100 flex justify-end">
               <button
+                type="button"
                 onClick={() => setSelectedArticle(null)}
-                className="px-6 py-2.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold hover:bg-black transition"
+                className="px-6 py-2.5 rounded-full bg-brand-pillDark text-white text-xs font-semibold hover:bg-black transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
               >
                 Tutup Artikel
               </button>
@@ -199,4 +241,3 @@ export default function ArticlesSection() {
     </section>
   );
 }
-

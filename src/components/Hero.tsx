@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { VIBE_CHIPS } from "@/data/mockData";
 
 interface HeroProps {
@@ -44,7 +44,7 @@ export default function Hero({
       <div className="relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-medium tracking-wide">
           <span className="w-2 h-2 rounded-full bg-brand-teal animate-pulse" />
-          <span>Bali trip — no cap, just vibes.</span>
+          <span>Bali trip: no cap, just vibes.</span>
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export default function Hero({
         {/* Left Headline & CTAs */}
         <div className="lg:col-span-8 max-w-2xl space-y-5 sm:space-y-6">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.15] text-white">
-            Bali&apos;s Calling — <br className="hidden sm:inline" />
+            Bali&apos;s Calling: <br className="hidden sm:inline" />
             <span className="text-white/95">Let&apos;s Vibe And Explore Together</span>
           </h1>
 
@@ -65,8 +65,9 @@ export default function Hero({
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
             {/* Primary Dark Pill Button with Teal Arrow Circle */}
             <button
+              type="button"
               onClick={onExploreClick}
-              className="group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-brand-pillDark text-white text-xs sm:text-sm font-semibold hover:bg-black transition-all duration-300 shadow-md hover:shadow-lg"
+              className="group inline-flex items-center gap-3 pl-6 pr-2 py-2 rounded-full bg-brand-pillDark text-white text-xs sm:text-sm font-semibold hover:bg-black transition-all duration-300 shadow-md hover:shadow-lg focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
             >
               <span>Jelajahi Sekarang</span>
               <span className="w-8 h-8 rounded-full bg-brand-teal flex items-center justify-center text-brand-dark group-hover:scale-105 transition-transform">
@@ -76,8 +77,9 @@ export default function Hero({
 
             {/* Secondary Ghost Button */}
             <button
+              type="button"
               onClick={onGalleryClick}
-              className="inline-flex items-center justify-center px-6 sm:px-7 py-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-semibold transition-all duration-200"
+              className="inline-flex items-center justify-center px-6 sm:px-7 py-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-semibold transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
             >
               Galeri
             </button>
@@ -94,9 +96,10 @@ export default function Hero({
               const isActive = selectedVibe === chip.id;
               return (
                 <button
+                  type="button"
                   key={chip.id}
                   onClick={() => onSelectVibe(chip.id)}
-                  className={`flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl text-left transition-all duration-300 backdrop-blur-md border ${
+                  className={`flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl text-left transition-all duration-300 backdrop-blur-md border focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none ${
                     isActive
                       ? "bg-brand-teal text-brand-dark border-brand-teal font-bold shadow-lg scale-102"
                       : "bg-white/15 hover:bg-white/25 text-white border-white/15 font-medium"
@@ -113,4 +116,3 @@ export default function Hero({
     </section>
   );
 }
-

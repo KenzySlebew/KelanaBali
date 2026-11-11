@@ -397,7 +397,7 @@ export const QUICK_STATS = [
 ];
 
 export const VIBE_CHIPS = [
-  { id: "aesthetic", label: "Spot Aesthetic", emoji: "✨" },
+  { id: "aesthetic", label: "Spot Aesthetic", emoji: "📸" },
   { id: "chill", label: "Vibe Chill", emoji: "🌊" },
   { id: "adventure", label: "Adventure Mode", emoji: "🧗" },
   { id: "zen", label: "Zen Corner", emoji: "🍃" },

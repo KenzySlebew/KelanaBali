@@ -1,7 +1,7 @@
 "use client"
 
 /**
- * Nimbus UI · Liquid Navbar — "Waterline"
+ * Nimbus UI · Liquid Navbar: "Waterline"
  * A pill of water. The active drop stretches toward the item you pick, splits into
  * droplets on long jumps and merges back with a ripple. The cursor lifts a meniscus,
  * every tap sends a wave along the pill, and each icon plays its own little scene.
@@ -18,6 +18,8 @@ export type LiquidNavItem = {
   label: string
   href?: string
   icon?: React.ReactNode
+  /** optional small count badge shown on the icon */
+  badge?: number | string
   /** the little scene the icon plays when tapped */
   fx?: NimbusFx
 }
@@ -29,6 +31,8 @@ export type LiquidNavbarProps = {
   onChange?: (index: number, item: LiquidNavItem) => void
   /** "light" water for bright backgrounds, "dark" for dark ones */
   tone?: "light" | "dark"
+  /** visual variant: inline header "pill" or mobile bottom "dock" */
+  variant?: "pill" | "dock"
   /** icons only */
   compact?: boolean
   /** soft synthesized "plip" on tap (no audio files) */
@@ -49,6 +53,9 @@ export const NimbusIcons = {
   plane: I(<path d="M21 12.2 3.6 5.4l2.7 6.8-2.7 6.4L21 12.2Zm-14.7 0H13" />),
   drop: I(<path d="M12 3.5s6 6.4 6 10.6a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z" />),
   user: I(<><circle cx="12" cy="8.5" r="3.8" /><path d="M4.8 20c1.2-3.4 4-5 7.2-5s6 1.6 7.2 5" /></>),
+  map: I(<><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></>),
+  chat: I(<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />),
+  bookmark: I(<path d="M6.5 4.5h11a1 1 0 0 1 1 1V20l-6.5-3.8L5.5 20V5.5a1 1 0 0 1 1-1Z" />),
 }
 
 const DEFAULT_ITEMS: LiquidNavItem[] = [
@@ -64,7 +71,7 @@ const PAD = 14 // canvas bleed around the pill, for shadows and ripples
 /* ---------- styles ---------- */
 const NIMBUS_CSS = `
 .nimbus-nav{--n-tint:rgba(255,255,255,.14);--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.6);--n-rim:rgba(255,255,255,.7);
-  position:relative;display:inline-flex;align-items:center;gap:2px;padding:6px;border-radius:999px;isolation:isolate;
+  position:relative;display:inline-flex;align-items:center;gap:2px;padding:6px;border-radius:999px;isolation:isolate;touch-action:pan-y;
   font-family:ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
 .nimbus-nav[data-tone="dark"]{--n-tint:rgba(10,18,40,.26);--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.66);--n-rim:rgba(255,255,255,.34)}
 .nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:var(--n-tint);
@@ -110,6 +117,13 @@ const NIMBUS_CSS = `
 .nimbus-nav[data-compact="true"] .nimbus-item{padding:0 13px}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:520px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+@media (min-width:768px) and (max-width:1023px){.nimbus-nav.nimbus-tablet-compact .nimbus-item{padding:0 13px}.nimbus-nav.nimbus-tablet-compact .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+.nimbus-badge{position:absolute;top:-5px;right:-8px;min-width:15px;height:15px;padding:0 4px;border-radius:999px;background:#00C2CB;color:#0F172A;font-size:9px;font-weight:800;line-height:15px;text-align:center;box-shadow:0 2px 6px rgba(0,194,203,.35);pointer-events:none}
+.nimbus-nav[data-variant="dock"]{width:100%;justify-content:space-between;padding:6px;background:rgba(255,255,255,.78)}
+.nimbus-nav[data-variant="dock"] .nimbus-item{flex:1 1 0%;min-width:0;flex-direction:column;justify-content:center;gap:3px;height:48px;padding:4px 4px}
+.nimbus-nav[data-variant="dock"] .nimbus-label{position:static;width:auto;height:auto;overflow:visible;clip:auto;font-size:10px;line-height:1.1;font-weight:600;letter-spacing:-.01em}
+.nimbus-nav[data-variant="dock"] .nimbus-item[aria-current="page"]{color:#0B132B;font-weight:700}
+.nimbus-nav[data-variant="dock"] .nimbus-item[aria-current="page"] .nv-ico{color:#008B94}
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
 `
 
@@ -230,13 +244,17 @@ export function LiquidNavbar({
   active,
   onChange,
   tone = "light",
+  variant = "pill",
   compact,
   sound = false,
   className,
   style,
 }: LiquidNavbarProps) {
   const [inner, setInner] = React.useState(defaultActive)
+  const [hoverIdx, setHoverIdx] = React.useState<number | null>(null)
   const current = active ?? inner
+  const visual = hoverIdx !== null && hoverIdx >= 0 && hoverIdx < items.length ? hoverIdx : current
+  const swipeRef = React.useRef({ down: false, startX: 0, startY: 0, dragged: false, blockClickUntil: 0 })
   const navRef = React.useRef<HTMLElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const dropRef = React.useRef<HTMLSpanElement>(null)
@@ -381,11 +399,14 @@ export function LiquidNavbar({
   /* ---- layout ---- */
   const measure = React.useCallback(() => {
     const nav = navRef.current
-    const el = itemRefs.current[current]
+    const el = itemRefs.current[visual]
     if (!nav || !el) return
+    const w = nav.offsetWidth
+    const h = nav.offsetHeight
+    if (w === 0 || h === 0) return
     const s = st.current
-    s.w = nav.offsetWidth
-    s.h = nav.offsetHeight
+    s.w = w
+    s.h = h
     const T = s.t
     T.r = el.offsetHeight / 2
     T.q = Math.max(0, el.offsetWidth / 2 - T.r)
@@ -414,7 +435,7 @@ export function LiquidNavbar({
       }
     }
     loop()
-  }, [current, loop])
+  }, [visual, loop])
 
   React.useEffect(() => {
     setRefract(supportsRefraction())
@@ -425,27 +446,55 @@ export function LiquidNavbar({
     if (!s.glc) setGl("off")
     const lost = (e: Event) => { e.preventDefault(); s.glc = null; setGl("off") }
     cv?.addEventListener("webglcontextlost", lost)
-    const io = new IntersectionObserver(([e]) => { s.visible = e.isIntersecting; if (s.visible) loop() })
+    const io = new IntersectionObserver(([e]) => {
+      s.visible = e.isIntersecting
+      if (s.visible) {
+        measureRef.current()
+        loop()
+      }
+    })
     if (navRef.current) io.observe(navRef.current)
     const vis = () => { s.visible = document.visibilityState === "visible"; if (s.visible) loop() }
     document.addEventListener("visibilitychange", vis)
+    let lastY = window.scrollY
+    let lastScrollRipple = 0
+    const onScroll = () => {
+      if (!s.visible || s.reduce || s.w === 0) return
+      const now = performance.now()
+      const y = window.scrollY
+      const dy = Math.abs(y - lastY)
+      lastY = y
+      if (dy > 14 && now - lastScrollRipple > 160) {
+        lastScrollRipple = now
+        s.rips.push({ x: s.t.x || PAD + s.w * 0.5, y: s.t.cy || PAD + s.h * 0.5, age: 0, amp: Math.min(0.45, dy * 0.008) })
+        loop()
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
     return () => {
       cv?.removeEventListener("webglcontextlost", lost)
       io.disconnect()
       document.removeEventListener("visibilitychange", vis)
+      window.removeEventListener("scroll", onScroll)
       cancelAnimationFrame(s.raf)
       s.raf = 0
     }
   }, [loop])
 
-  React.useLayoutEffect(() => { measure() }, [measure, items.length, compact])
+  React.useLayoutEffect(() => { measure() }, [measure, items.length, compact, variant])
   const measureRef = React.useRef(measure)
   measureRef.current = measure
   React.useEffect(() => {
     let lastW = -1
     const ro = new ResizeObserver(() => {
       const w = navRef.current?.offsetWidth ?? 0
-      if (w !== lastW) { lastW = w; st.current.ready = false; measureRef.current() }
+      if (w !== lastW) {
+        lastW = w
+        if (w > 0) {
+          st.current.ready = false
+          measureRef.current()
+        }
+      }
     })
     if (navRef.current) ro.observe(navRef.current)
     return () => ro.disconnect()
@@ -510,14 +559,72 @@ export function LiquidNavbar({
     itemRefs.current[n]?.focus()
   }
 
+  const findItemAtX = (clientX: number) => {
+    let best = -1
+    let bestDist = Infinity
+    itemRefs.current.forEach((el, idx) => {
+      if (!el || idx >= items.length) return
+      const r = el.getBoundingClientRect()
+      if (clientX >= r.left && clientX <= r.right) {
+        best = idx
+        bestDist = 0
+      } else {
+        const d = Math.min(Math.abs(clientX - r.left), Math.abs(clientX - r.right))
+        if (d < bestDist) {
+          bestDist = d
+          best = idx
+        }
+      }
+    })
+    return best
+  }
+
+  const updateHoverTarget = (clientX: number) => {
+    const idx = findItemAtX(clientX)
+    if (idx >= 0) {
+      setHoverIdx((prev) => {
+        if (prev !== idx) {
+          const c = iconCenter(idx)
+          if (c) ripple(c.x, c.y, 0.42)
+        }
+        return prev === idx ? prev : idx
+      })
+    }
+  }
+
   const onMove = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return
     const p = local(e.clientX, e.clientY)
     const s = st.current
     s.mouse.x = p.x
     s.mouse.y = p.y
     s.mouse.on = true
     loop()
+
+    if (e.pointerType === "mouse") {
+      updateHoverTarget(e.clientX)
+    } else if (swipeRef.current.down) {
+      const dx = Math.abs(e.clientX - swipeRef.current.startX)
+      const dy = Math.abs(e.clientY - swipeRef.current.startY)
+      if (!swipeRef.current.dragged && dx > 10 && dx > dy) {
+        swipeRef.current.dragged = true
+      }
+      if (swipeRef.current.dragged) {
+        updateHoverTarget(e.clientX)
+      }
+    }
+  }
+
+  const onPointerEnd = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") {
+      if (swipeRef.current.dragged) {
+        swipeRef.current.blockClickUntil = performance.now() + 250
+      }
+      swipeRef.current.down = false
+      swipeRef.current.dragged = false
+      st.current.mouse.on = false
+      setHoverIdx(null)
+      loop()
+    }
   }
 
   return (
@@ -525,14 +632,30 @@ export function LiquidNavbar({
       ref={navRef as any}
       className={["nimbus-nav", className].filter(Boolean).join(" ")}
       data-tone={tone}
+      data-variant={variant}
       data-gl={gl}
-      data-compact={compact === undefined ? undefined : String(compact)}
+      data-compact={compact === undefined ? (variant === "dock" ? "false" : undefined) : String(compact)}
       data-refract={refract ? "on" : "off"}
       aria-label="Main"
       onKeyDown={onKeyDown}
       onPointerMove={onMove}
-      onPointerLeave={() => { st.current.mouse.on = false; loop() }}
-      onPointerDown={(e) => { const p = local(e.clientX, e.clientY); ripple(p.x, p.y, 0.8) }}
+      onPointerLeave={() => { st.current.mouse.on = false; setHoverIdx(null); loop() }}
+      onPointerDown={(e) => {
+        const p = local(e.clientX, e.clientY)
+        const s = st.current
+        s.mouse.x = p.x
+        s.mouse.y = p.y
+        s.mouse.on = true
+        if (e.pointerType !== "mouse") {
+          swipeRef.current.down = true
+          swipeRef.current.startX = e.clientX
+          swipeRef.current.startY = e.clientY
+          swipeRef.current.dragged = false
+        }
+        ripple(p.x, p.y, 0.8)
+      }}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
       style={style}
     >
       <style dangerouslySetInnerHTML={{ __html: NIMBUS_CSS }} />
@@ -552,14 +675,25 @@ export function LiquidNavbar({
         const props = {
           ref: (el: HTMLElement | null) => { itemRefs.current[i] = el },
           className: "nimbus-item",
+          title: it.label,
           "aria-current": i === current ? ("page" as const) : undefined,
-          onClick: () => select(i),
+          onClick: (e: React.MouseEvent) => {
+            if (performance.now() < swipeRef.current.blockClickUntil) {
+              e.preventDefault()
+              return
+            }
+            setHoverIdx(null)
+            select(i)
+          },
         }
         const content = (
           <>
-            {it.icon && (
+            {(it.icon || it.badge !== undefined) && (
               <span className="nv-ico" key={playing ? fx.n : 0} data-fx={playing ? kind : undefined} ref={(el) => { iconRefs.current[i] = el }}>
                 {it.icon}
+                {it.badge !== undefined && Number(it.badge) > 0 && (
+                  <span className="nimbus-badge">{it.badge}</span>
+                )}
               </span>
             )}
             <span className="nimbus-label">{it.label}</span>

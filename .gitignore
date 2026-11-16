@@ -40,3 +40,5 @@ next-env.d.ts
 
 # raw stitch exports & design references (used images live in /public/images)
 /stitch_assets/
+
+/.agents

@@ -274,6 +274,54 @@ export const ALL_SPOTS: Spot[] = [
       "Jalanan tebing kapur berkelok dramatis yang langsung bermuara ke pantai pasir putih jernih dan beach clubs modern.",
     tips: "Abadikan momen saat berkendara menuruni tebing!",
   },
+  {
+    id: "crate-cafe",
+    index: "09",
+    title: "Crate Cafe & Bakery Canggu",
+    location: "Jl. Canggu Padang Linjong No.49, Canggu",
+    region: "Canggu & Seminyak",
+    category: "Cafe & Chill",
+    tag: "Work From Bali",
+    rating: 4.9,
+    reviewCount: 1240,
+    image: "/images/image_58.jpg",
+    entryFee: "Mulai Rp 35.000",
+    entryFeeNum: 35000,
+    bestTime: "06:30 - 09:00 WITA",
+    duration: "< 2 Jam",
+    vibe: ["aesthetic", "chill"],
+    crowdLevel: "Sepi Pagi",
+    budgetCategory: "< 50rb",
+    distanceFromCanggu: "Pusat Canggu",
+    mapCoords: { x: 38, y: 72 },
+    description:
+      "Tempat ngopi semi-terbuka yang menghadap langsung ke hamparan sawah hijau Padang Linjong. Terkenal dengan sajian sarapan sehat, roti panggang segar, dan es americano berbahan biji Kintamani.",
+    tips: "Datang sebelum jam 8 pagi untuk mendapatkan sofa pinggir sawah dan suasana hening sebelum ramai.",
+  },
+  {
+    id: "the-lawn",
+    index: "10",
+    title: "The Lawn Canggu - Morning Deck",
+    location: "Batu Bolong Beachfront, Canggu",
+    region: "Canggu & Seminyak",
+    category: "Cafe & Chill",
+    tag: "Oceanfront Chill",
+    rating: 4.8,
+    reviewCount: 890,
+    image: "/images/image_59.jpg",
+    entryFee: "Mulai Rp 45.000",
+    entryFeeNum: 45000,
+    bestTime: "09:00 - 11:30 WITA",
+    duration: "< 2 Jam",
+    vibe: ["chill", "aesthetic"],
+    crowdLevel: "Sepi Pagi",
+    budgetCategory: "50k-150k",
+    distanceFromCanggu: "5 min dari Echo Beach",
+    mapCoords: { x: 37, y: 74 },
+    description:
+      "Dek kayu santai di tepi Pantai Batu Bolong dengan pemandangan ombak lepas dan para peselancar. Area paginya tenang dan cocok untuk membaca buku atau menikmati angin laut.",
+    tips: "Pilih tempat duduk di sisi teras atas yang terlindung dari terik matahari langsung saat menjelang siang.",
+  },
 ];
 
 export const SPOTS_DATA: Spot[] = ALL_SPOTS.slice(0, 4);
@@ -340,51 +388,79 @@ export const GROUP_TYPES = [
   { id: "family", label: "Family Trip", icon: "👨‍👩‍👧‍👦", defaultCount: 5 },
 ];
 
+export interface EditorialArticle {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  category: "Cafe & Kuliner" | "Hidden Gems Alam" | "Etika & Budaya" | "Rute & Panduan";
+  editionLabel: string;
+  readTime: string;
+  date: string;
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+    verifiedLocation: string;
+  };
+  heroImage: string;
+  heroCaption: string;
+  excerpt: string;
+  tags: string[];
+  routeStops?: {
+    time: string;
+    spotId: string;
+    title: string;
+    desc: string;
+    transitNote?: string;
+  }[];
+}
+
 export const ARTICLES_DATA: { featured: Article; sideArticles: Article[] } = {
   featured: {
     id: "americano-canggu",
-    title: "Sruputttt! Ini Alasan Kenapa Americano Cocok Jadi Teman Setia di Pagi Hari di Canggu",
+    title: "Alasan Americano Dingin Jadi Pilihan Paling Masuk Akal Buat Pagi Hari di Canggu",
     category: "NEWS",
     badgeType: "news",
-    date: "2 Nov 2026",
-    readTime: "4 mnt baca",
-    image: "/images/article_americano.jpg",
+    date: "18 Mei 2026",
+    readTime: "5 mnt baca",
+    image: "/images/image_57.jpg",
     excerpt:
-      "Menikmati semilir angin pantai Canggu sambil menyesap secangkir Americano dingin bukan cuma rutinitas, tapi seni memulai hari buat para traveler & digital nomad yang ogah ribet.",
+      "Udara pesisir Canggu cepat terasa gerah begitu matahari naik. Buat yang terbiasa membuka laptop di tepi sawah atau bersiap ke pantai, kopi hitam dingin berbahan biji Kintamani terasa jauh lebih ramah di lambung dibanding susu panas.",
   },
   sideArticles: [
     {
-      id: "ngopi-dulu",
-      title: "Ngopi Dulu Derrrrrr Biar Nggak Salah Pencet!",
+      id: "ngopi-ubud",
+      title: "5 Kafe Tenang di Ubud untuk Kerja Tanpa Bising",
       category: "Hidden Gem",
       badgeType: "curation",
-      date: "31 Okt 2026",
-      readTime: "3 mnt baca",
-      image: "/images/article_cafe_aesthetic.jpg",
+      date: "14 Mei 2026",
+      readTime: "4 mnt baca",
+      image: "/images/image_60.jpg",
       excerpt:
-        "Deretan cafe estetik tersembunyi di gang-gang Pererenan dengan stopkontak melimpah dan cold brew istimewa.",
+        "Pilihan tempat ngopi di tengah rimbunnya lembah hijau Ubud dengan koneksi internet serat optik yang stabil dan tata letak meja yang nyaman untuk fokus bekerja.",
     },
     {
-      id: "kenapa-rasa-kopi",
-      title: "Kenapa Rasa Kopi Mirip Mantan? Pahit Tapi Bikin Kangen!",
+      id: "kopi-kintamani",
+      title: "Catatan Rasa Kopi Arabika Kintamani dari Lereng Batur",
       category: "Sunset Vibe",
       badgeType: "guide",
-      date: "29 Okt 2026",
-      readTime: "5 mnt baca",
-      image: "/images/article_sunset_drink.jpg",
+      date: "10 Mei 2026",
+      readTime: "6 mnt baca",
+      image: "/images/image_61.jpg",
       excerpt:
-        "Eksplorasi spot sunset bar pinggir tebing Uluwatu yang menyajikan mocktail segar beraroma kopi dan jeruk Bali.",
+        "Menelusuri kebun kopi vulkanis di ketinggian 1.300 mdpl dan kebiasaan petani lokal mengolah ceri kopi menjadi seduhan sedap berkarakter sitrus alami.",
     },
     {
-      id: "kopi-kerja-repeat",
-      title: "Kopi, Kerja, Repeat: Resep Bahagia Para Pejuang Deadline",
+      id: "budget-solo-trip",
+      title: "Rincian Biaya Solo Trip 4 Hari di Bali yang Masuk Akal",
       category: "Digital Nomad",
       badgeType: "curation",
-      date: "27 Okt 2026",
-      readTime: "4 mnt baca",
-      image: "/images/article_remote_work.jpg",
+      date: "06 Mei 2026",
+      readTime: "7 mnt baca",
+      image: "/images/image_62.jpg",
       excerpt:
-        "Panduan memilih coworking space di Ubud yang dikelilingi sawah hijau agar kerjaan kelar tanpa burnout.",
+        "Hitungan pengeluaran harian yang realistis, mulai dari sewa skuter matic, rekomendasi penginapan bersih, hingga daftar warung makan lokal dengan porsi mengenyangkan.",
     },
   ],
 };

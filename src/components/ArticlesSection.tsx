@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Clock, X } from "lucide-react";
+import Link from "next/link";
+import { Clock, X, ArrowRight } from "lucide-react";
 import { ARTICLES_DATA, Article } from "@/data/mockData";
 
 export default function ArticlesSection() {
@@ -39,14 +40,13 @@ export default function ArticlesSection() {
             Baca 100+ Artikel Baru
           </h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setSelectedArticle(featured)}
+        <Link
+          href="/artikel"
           className="text-xs sm:text-sm font-bold text-brand-dark hover:text-brand-deepTeal flex items-center gap-1.5 transition group focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-lg px-2 py-1"
         >
           <span>Lihat semua</span>
           <span className="group-hover:translate-x-1 transition-transform">→</span>
-        </button>
+        </Link>
       </div>
 
       {/* Magazine Grid: 1 Big Left Card + 3 Stacked Right Cards */}
@@ -226,7 +226,14 @@ export default function ArticlesSection() {
               </p>
             </div>
 
-            <div className="mt-8 pt-5 border-t border-gray-100 flex justify-end">
+            <div className="mt-8 pt-5 border-t border-gray-100 flex items-center justify-between gap-3">
+              <Link
+                href="/artikel"
+                className="px-5 py-2.5 rounded-full bg-teal-50 text-brand-deepTeal border border-brand-teal/30 hover:bg-teal-100 text-xs font-semibold transition flex items-center gap-1.5"
+              >
+                <span>Buka Halaman Penuh Jurnal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
               <button
                 type="button"
                 onClick={() => setSelectedArticle(null)}

@@ -411,6 +411,59 @@ export function useTripStore() {
     }));
   };
 
+  const addCangguCoffeeRoute = () => {
+    setTrip((prev) => {
+      const updatedDays = [...prev.days];
+      const day4 = updatedDays[3];
+      if (day4) {
+        const hasCrate = day4.slots.some((s) => s.spotId === "crate-cafe");
+        const hasLawn = day4.slots.some((s) => s.spotId === "the-lawn");
+        if (!hasCrate || !hasLawn) {
+          const crateSlot: ItinerarySlot = {
+            id: `slot-crate-${Date.now()}`,
+            timeSlot: "Pagi",
+            timeRange: "07:30 - 09:30 WITA",
+            spotId: "crate-cafe",
+            title: "Crate Cafe & Bakery Canggu",
+            category: "Cafe & Chill",
+            location: "Padang Linjong, Canggu",
+            image: "/images/image_58.jpg",
+            entryFee: "Mulai Rp 35.000",
+            costNum: 35000,
+            notes: "Kopi Kintamani dingin & sarapan sehat menghadap sawah hijau.",
+            transitToNext: {
+              motorMins: 8,
+              carMins: 15,
+              distanceKm: 2.1,
+            },
+          };
+          const lawnSlot: ItinerarySlot = {
+            id: `slot-lawn-${Date.now() + 1}`,
+            timeSlot: "Siang",
+            timeRange: "09:45 - 12:30 WITA",
+            spotId: "the-lawn",
+            title: "The Lawn Canggu - Morning Deck",
+            category: "Cafe & Chill",
+            location: "Batu Bolong, Canggu",
+            image: "/images/image_59.jpg",
+            entryFee: "Mulai Rp 45.000",
+            costNum: 45000,
+            notes: "Dek kayu santai tepi pantai Batu Bolong sebelum musik sore dimulai.",
+            transitToNext: {
+              motorMins: 12,
+              carMins: 20,
+              distanceKm: 3.5,
+            },
+          };
+          day4.slots = [crateSlot, lawnSlot, ...day4.slots.filter((s) => s.spotId !== "crate-cafe" && s.spotId !== "the-lawn")];
+          day4.totalKm = parseFloat((day4.totalKm + 5.6).toFixed(1));
+          day4.totalDriveTime = "1j 30m";
+        }
+      }
+      return { ...prev, days: updatedDays };
+    });
+  };
+
   const resetToDefault = () => {
     setTrip(INITIAL_TRIP_STATE);
   };
@@ -425,6 +478,7 @@ export function useTripStore() {
     applySuggestion,
     revertSuggestion,
     addBestie,
+    addCangguCoffeeRoute,
     resetToDefault,
   };
 }

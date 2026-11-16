@@ -267,11 +267,11 @@ export default function Navbar({ onOpenMimin }: NavbarProps) {
               </span>
             </Link>
             <Link
-              href="/#artikel"
+              href="/artikel"
               onClick={() => setMobileMenuOpen(false)}
               className="px-3 py-2 rounded-xl hover:bg-brand-surface transition"
             >
-              Artikel & Rekomendasi
+              Artikel &amp; Rekomendasi
             </Link>
             <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
               <button

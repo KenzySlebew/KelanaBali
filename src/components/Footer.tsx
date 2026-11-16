@@ -22,7 +22,7 @@ export default function Footer() {
           <Link href="/tanya-mimin" className="hover:text-brand-dark transition">
             Tanya Mimin
           </Link>
-          <Link href="/#artikel" className="hover:text-brand-dark transition">
+          <Link href="/artikel" className="hover:text-brand-dark transition">
             Artikel
           </Link>
         </nav>

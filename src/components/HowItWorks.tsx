@@ -139,7 +139,7 @@ export default function HowItWorks({ onOpenMimin }: HowItWorksProps) {
             {/* Photo 1: Pura Lempuyang Gate of Heaven */}
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm group">
               <Image
-                src="/images/collage_lempuyang.jpg"
+                src="/images/spot_lempuyang_hd.jpg"
                 alt="Pura Lempuyang Gate of Heaven Bali"
                 fill
                 sizes="(max-width: 640px) 150px, 300px"
@@ -155,7 +155,7 @@ export default function HowItWorks({ onOpenMimin }: HowItWorksProps) {
             {/* Photo 2: Ulun Danu Beratan */}
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm group translate-y-3 sm:translate-y-4">
               <Image
-                src="/images/collage_ulun_danu.jpg"
+                src="/images/spot_ulun_danu_hd.jpg"
                 alt="Ulun Danu Beratan Lake Temple"
                 fill
                 sizes="(max-width: 640px) 150px, 300px"
@@ -171,7 +171,7 @@ export default function HowItWorks({ onOpenMimin }: HowItWorksProps) {
             {/* Photo 3: Turquoise Coast Cliff */}
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm group">
               <Image
-                src="/images/collage_beach_cliff.jpg"
+                src="/images/spot_melasti_cliff_hd.jpg"
                 alt="Turquoise Beach Cliff in Bali"
                 fill
                 sizes="(max-width: 640px) 150px, 300px"
@@ -187,7 +187,7 @@ export default function HowItWorks({ onOpenMimin }: HowItWorksProps) {
             {/* Photo 4: Tropical Jungle Waterfall */}
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm group translate-y-3 sm:translate-y-4">
               <Image
-                src="/images/collage_jungle.jpg"
+                src="/images/spot_jungle_hd.jpg"
                 alt="Lush Tropical Jungle Bali"
                 fill
                 sizes="(max-width: 640px) 150px, 300px"

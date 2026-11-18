@@ -7,23 +7,26 @@ import { ItinerarySlot } from "@/data/tripStore";
 
 interface ItineraryRouteMapProps {
   slots: ItinerarySlot[];
+  dayTitle?: string;
   activeSlotId?: string;
   onSelectSlot?: (slotId: string) => void;
 }
 
 export default function ItineraryRouteMap({
   slots,
+  dayTitle,
   activeSlotId,
   onSelectSlot,
 }: ItineraryRouteMapProps) {
   const [hoveredPin, setHoveredPin] = useState<number | null>(null);
 
-  // Geographic pin percentage coordinates in Southern Bali (Uluwatu / Bukit Peninsula)
+  // Geographic pin percentage coordinates
   const pinCoordinates = [
-    { x: 34, y: 76, name: "Nyang Nyang Beach" },
-    { x: 26, y: 52, name: "Single Fin & Suluban" },
-    { x: 18, y: 64, name: "Pura Luhur Uluwatu" },
-    { x: 58, y: 28, name: "Kedonganan Seafood" },
+    { x: 34, y: 76, name: "Titik 1" },
+    { x: 26, y: 52, name: "Titik 2" },
+    { x: 50, y: 44, name: "Titik 3" },
+    { x: 68, y: 30, name: "Titik 4" },
+    { x: 74, y: 60, name: "Titik 5" },
   ];
 
   return (
@@ -33,11 +36,11 @@ export default function ItineraryRouteMap({
         <div className="flex items-center gap-2">
           <Navigation className="w-4 h-4 text-brand-teal" />
           <h4 className="text-xs sm:text-sm font-bold text-brand-dark font-sans">
-            Peta Rute Harian (Uluwatu Coastline)
+            Peta Rute Harian: {dayTitle || "Uluwatu Coastline"}
           </h4>
         </div>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded-xl bg-teal-50 text-brand-deepTeal font-bold border border-brand-teal/20">
-          4 Titik Singgah
+          {slots.length} Titik Singgah
         </span>
       </div>
 

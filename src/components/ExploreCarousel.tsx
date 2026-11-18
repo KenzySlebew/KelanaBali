@@ -1,27 +1,48 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Eye, Bookmark, MapPin, ArrowRight } from "lucide-react";
-import { Spot, SPOTS_DATA, BEACH_SPOTS, CULTURE_SPOTS } from "@/data/mockData";
+import {
+  Spot,
+  SPOTS_DATA,
+  BEACH_SPOTS,
+  CULTURE_SPOTS,
+  NATURE_SPOTS,
+  CAFE_SPOTS,
+} from "@/data/mockData";
+
+export type TabType = "Beach Vibes" | "Nature Escape" | "Culture & Heritage" | "Cafe & Chill";
 
 interface ExploreCarouselProps {
   onSelectSpot: (spot: Spot) => void;
   onSaveSpot: (spot: Spot) => void;
   savedSpotIds: string[];
+  activeTab?: TabType;
+  onTabChange?: (tab: TabType) => void;
 }
-
-type TabType = "Nature Escape" | "Beach Vibes" | "Culture & Heritage";
 
 export default function ExploreCarousel({
   onSelectSpot,
   onSaveSpot,
   savedSpotIds,
+  activeTab: controlledActiveTab,
+  onTabChange,
 }: ExploreCarouselProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("Nature Escape");
+  const [internalTab, setInternalTab] = useState<TabType>("Beach Vibes");
+  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalTab;
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleTabClick = (tab: TabType) => {
+    if (onTabChange) {
+      onTabChange(tab);
+    } else {
+      setInternalTab(tab);
+    }
+    setCurrentIndex(0);
+  };
 
   const getSpots = (): Spot[] => {
     switch (activeTab) {
@@ -29,8 +50,12 @@ export default function ExploreCarousel({
         return BEACH_SPOTS;
       case "Culture & Heritage":
         return CULTURE_SPOTS;
+      case "Cafe & Chill":
+        return CAFE_SPOTS;
+      case "Nature Escape":
+        return NATURE_SPOTS.length > 0 ? NATURE_SPOTS : SPOTS_DATA;
       default:
-        return SPOTS_DATA;
+        return BEACH_SPOTS;
     }
   };
 
@@ -78,28 +103,39 @@ export default function ExploreCarousel({
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-6 sm:gap-8 border-b border-gray-100 pb-3 mb-8 sm:mb-10 overflow-x-auto no-scrollbar">
-        {(["Nature Escape", "Beach Vibes", "Culture & Heritage"] as TabType[]).map(
-          (tab) => {
-            const isActive = activeTab === tab;
-            return (
-              <button
-                type="button"
-                key={tab}
-                onClick={() => {
-                  setActiveTab(tab);
-                  setCurrentIndex(0);
-                }}
-                className={`text-sm sm:text-base font-semibold pb-3 relative whitespace-nowrap transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-lg ${
+        {(
+          [
+            { key: "Beach Vibes", label: "Pesisir & Sunset", count: 4 },
+            { key: "Nature Escape", label: "Alam & Hijau", count: 3 },
+            { key: "Culture & Heritage", label: "Budaya & Pura", count: 3 },
+            { key: "Cafe & Chill", label: "Kafe & Santai", count: 2 },
+          ] as { key: TabType; label: string; count: number }[]
+        ).map((tab) => {
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              type="button"
+              key={tab.key}
+              onClick={() => handleTabClick(tab.key)}
+              className={`text-sm sm:text-base font-semibold pb-3 relative whitespace-nowrap transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none rounded-lg flex items-center gap-2 ${
+                isActive
+                  ? "text-brand-dark after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-brand-teal"
+                  : "text-brand-secondary hover:text-brand-dark"
+              }`}
+            >
+              <span>{tab.label}</span>
+              <span
+                className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${
                   isActive
-                    ? "text-brand-dark after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-brand-teal"
-                    : "text-brand-secondary hover:text-brand-dark"
+                    ? "bg-teal-50 text-brand-deepTeal font-bold"
+                    : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {tab}
-              </button>
-            );
-          }
-        )}
+                {tab.count} Spot
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Section Sub-header & Carousel Controls */}

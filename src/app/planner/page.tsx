@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import MiminModal from "@/components/MiminModal";
 import WishlistDrawer from "@/components/WishlistDrawer";
 import SpotModal from "@/components/SpotModal";
+import { useTripStore } from "@/data/tripStore";
 import {
   PLANNER_VIBE_CARDS,
   GROUP_TYPES,
@@ -17,6 +19,7 @@ import {
 } from "@/data/mockData";
 import {
   Check,
+  CheckCircle2,
   Calendar as CalendarIcon,
   Users,
   DollarSign,
@@ -33,6 +36,9 @@ import {
 } from "lucide-react";
 
 export default function PlannerPage() {
+  const router = useRouter();
+  const { trip, syncFromPlanner, isLoaded } = useTripStore();
+
   // Wizard State
   const [activeStep, setActiveStep] = useState<number>(1);
 
@@ -49,6 +55,19 @@ export default function PlannerPage() {
   // Step 2 State: Dates & Duration
   const [durationDays, setDurationDays] = useState<number>(5);
   const [selectedStartDate, setSelectedStartDate] = useState<number>(14);
+
+  // Restore saved planner preferences if available
+  useEffect(() => {
+    if (isLoaded && trip.source === "planner") {
+      if (trip.durationDays) setDurationDays(trip.durationDays);
+      if (trip.partySize) setPeopleCount(trip.partySize);
+      if (trip.groupType) setGroupType(trip.groupType);
+      if (trip.budgetTier) setBudgetTier(trip.budgetTier);
+      if (trip.selectedVibeIds && trip.selectedVibeIds.length > 0) {
+        setSelectedVibeIds(trip.selectedVibeIds);
+      }
+    }
+  }, [isLoaded, trip.source]);
 
   // Modals & Context
   const [isMiminOpen, setIsMiminOpen] = useState(false);
@@ -648,7 +667,18 @@ export default function PlannerPage() {
                   </button>
 
                   <button
-                    onClick={() => setActiveStep(3)}
+                    onClick={() => {
+                      syncFromPlanner({
+                        durationDays,
+                        selectedVibeIds,
+                        groupType,
+                        peopleCount,
+                        budgetTier,
+                        selectedStartDate,
+                        basecampArea: "Canggu + Ubud",
+                      });
+                      setActiveStep(3);
+                    }}
                     className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-brand-pillDark hover:bg-black text-white text-xs sm:text-sm font-bold shadow-md transition"
                   >
                     <span>Generate Draf Itinerary</span>
@@ -678,17 +708,21 @@ export default function PlannerPage() {
             {/* Master Summary Card */}
             <div className="p-6 sm:p-8 rounded-3xl bg-brand-surface border border-brand-mutedBorder/80 shadow-soft space-y-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-gray-200/80">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="px-3 py-1 rounded-full bg-brand-teal text-brand-dark text-xs font-extrabold">
                       ANTI WACANA VERIFIED ✓
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Tersimpan Otomatis ({durationDays} Hari, {peopleCount} Orang)</span>
                     </span>
                     <span className="text-xs text-brand-secondary">
                       {selectedStartDate} - {selectedStartDate + durationDays - 1} Mei 2026
                     </span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-brand-dark">
-                    Trip Santai Bestie {durationDays}D{durationDays - 1}N: Bali Vibe Healing & Sunset Catching
+                    {trip.title || `Trip ${durationDays}D${durationDays - 1}N: Eksplorasi Bali`}
                   </h3>
                 </div>
 
@@ -717,18 +751,38 @@ export default function PlannerPage() {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {itineraryDays.map((d) => (
+                  {(trip.days && trip.days.length > 0 ? trip.days : itineraryDays.slice(0, durationDays).map((d, i) => ({
+                    dayNumber: d.day,
+                    dateLabel: `${selectedStartDate + i} Mei`,
+                    title: d.title,
+                    stayArea: d.stay,
+                    slots: d.slots.map((s, sIdx) => ({
+                      id: `slot-${i}-${sIdx}`,
+                      timeSlot: "Pagi" as const,
+                      timeRange: s.time,
+                      spotId: s.spot,
+                      title: s.spot,
+                      category: s.tag,
+                      location: d.stay,
+                      image: "/images/image_30.jpg",
+                      entryFee: "Gratis",
+                      costNum: 0,
+                      notes: "",
+                    })),
+                    totalKm: 25,
+                    totalDriveTime: "1j 30m",
+                  }))).map((d) => (
                     <div
-                      key={d.day}
+                      key={d.dayNumber}
                       className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3 flex flex-col justify-between"
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                           <span className="text-xs font-extrabold text-brand-deepTeal">
-                            HARI {d.day}
+                            HARI {d.dayNumber} ({d.dateLabel})
                           </span>
                           <span className="text-[10px] text-brand-secondary font-medium">
-                            Stay: {d.stay}
+                            Stay: {d.stayArea}
                           </span>
                         </div>
                         <h5 className="text-xs sm:text-sm font-bold text-brand-dark leading-snug">
@@ -737,21 +791,21 @@ export default function PlannerPage() {
 
                         {/* Slots */}
                         <div className="space-y-2 pt-1">
-                          {d.slots.map((slot, sIdx) => (
+                          {d.slots.map((slot) => (
                             <div
-                              key={sIdx}
+                              key={slot.id}
                               className="p-2.5 rounded-xl bg-brand-surface/70 border border-brand-mutedBorder/50 space-y-1 text-xs"
                             >
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-mono font-bold text-brand-teal">
-                                  {slot.time}
+                                  {slot.timeRange}
                                 </span>
                                 <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-white text-brand-deepTeal border border-brand-teal/20">
-                                  {slot.tag}
+                                  {slot.category}
                                 </span>
                               </div>
                               <p className="font-semibold text-brand-dark">
-                                {slot.spot}
+                                {slot.title}
                               </p>
                             </div>
                           ))}
@@ -766,13 +820,26 @@ export default function PlannerPage() {
               <div className="pt-6 border-t border-gray-200/80 flex flex-col lg:flex-row items-center justify-between gap-4">
                 {/* Primary: Open in Itinerary Builder */}
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
-                  <Link
-                    href="/itinerary"
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      syncFromPlanner({
+                        durationDays,
+                        selectedVibeIds,
+                        groupType,
+                        peopleCount,
+                        budgetTier,
+                        selectedStartDate,
+                        basecampArea: "Canggu + Ubud",
+                      });
+                      router.push("/itinerary");
+                    }}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-brand-teal hover:bg-teal-300 text-brand-dark text-xs sm:text-sm font-extrabold shadow-md transition"
                   >
-                    <span>Buka di Itinerary Builder Detail</span>
+                    <span>Buka di Itinerary Builder Detail ({durationDays} Hari)</span>
                     <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  </button>
 
                   <Link
                     href="/tanya-mimin"

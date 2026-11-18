@@ -44,7 +44,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Beach Vibes",
     rating: 4.9,
     reviewCount: 1890,
-    image: "/images/image_30.jpg",
+    image: "/images/spot_nyang_nyang_hd.jpg",
     entryFee: "Rp 5.000 / motor",
     entryFeeNum: 5000,
     bestTime: "15:30 - 18:30 WITA",
@@ -68,7 +68,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Iconic View",
     rating: 5.0,
     reviewCount: 8400,
-    image: "/images/image_31.jpg",
+    image: "/images/spot_kelingking_hd.jpg",
     entryFee: "Rp 10.000 / orang",
     entryFeeNum: 10000,
     bestTime: "08:00 - 11:00 WITA",
@@ -92,7 +92,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Surfers Cave",
     rating: 4.8,
     reviewCount: 3120,
-    image: "/images/spot_suluban.jpg",
+    image: "/images/spot_suluban_hd.jpg",
     entryFee: "Gratis (Parkir Rp 5k)",
     entryFeeNum: 0,
     bestTime: "14:00 - 17:30 WITA",
@@ -116,7 +116,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Nature Escape",
     rating: 4.9,
     reviewCount: 5210,
-    image: "/images/image_33.jpg",
+    image: "/images/spot_tegalalang_hd.jpg",
     entryFee: "Rp 25.000 / orang",
     entryFeeNum: 25000,
     bestTime: "06:30 - 08:30 WITA",
@@ -140,7 +140,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Nature Chill",
     rating: 4.7,
     reviewCount: 2890,
-    image: "/images/image_34.jpg",
+    image: "/images/spot_campuhan_hd.jpg",
     entryFee: "Gratis (Free Entry)",
     entryFeeNum: 0,
     bestTime: "06:00 - 07:30 WITA",
@@ -164,7 +164,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Culture & Heritage",
     rating: 4.8,
     reviewCount: 4190,
-    image: "/images/spot_tirta_gangga.jpg",
+    image: "/images/spot_tirta_gangga_hd.jpg",
     entryFee: "Rp 50.000 / orang",
     entryFeeNum: 50000,
     bestTime: "08:30 - 11:00 WITA",
@@ -188,7 +188,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Top Nature",
     rating: 4.8,
     reviewCount: 3420,
-    image: "/images/spot_monkey_forest.jpg",
+    image: "/images/spot_monkey_hd.jpg",
     entryFee: "Rp 80.000 / orang",
     entryFeeNum: 80000,
     bestTime: "08:30 - 10:30 WITA",
@@ -212,7 +212,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Gate of Heaven",
     rating: 4.7,
     reviewCount: 3980,
-    image: "/images/collage_lempuyang.jpg",
+    image: "/images/spot_lempuyang_hd.jpg",
     entryFee: "Rp 55.000 / orang",
     entryFeeNum: 55000,
     bestTime: "06:00 - 08:00 WITA",
@@ -236,7 +236,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Floating Temple",
     rating: 4.9,
     reviewCount: 6100,
-    image: "/images/collage_ulun_danu.jpg",
+    image: "/images/spot_ulun_danu_hd.jpg",
     entryFee: "Rp 40.000 / orang",
     entryFeeNum: 40000,
     bestTime: "08:00 - 11:00 WITA",
@@ -260,7 +260,7 @@ export const ALL_SPOTS: Spot[] = [
     tag: "Aesthetic Road",
     rating: 4.8,
     reviewCount: 4200,
-    image: "/images/collage_beach_cliff.jpg",
+    image: "/images/spot_melasti_cliff_hd.jpg",
     entryFee: "Rp 10.000 / orang",
     entryFeeNum: 10000,
     bestTime: "16:00 - 18:30 WITA",
@@ -326,7 +326,9 @@ export const ALL_SPOTS: Spot[] = [
 
 export const SPOTS_DATA: Spot[] = ALL_SPOTS.slice(0, 4);
 export const BEACH_SPOTS: Spot[] = ALL_SPOTS.filter((s) => s.category === "Beach Vibes");
+export const NATURE_SPOTS: Spot[] = ALL_SPOTS.filter((s) => s.category === "Nature Escape");
 export const CULTURE_SPOTS: Spot[] = ALL_SPOTS.filter((s) => s.category === "Culture & Heritage");
+export const CAFE_SPOTS: Spot[] = ALL_SPOTS.filter((s) => s.category === "Cafe & Chill");
 
 // Planner Specific Data
 export interface PlannerVibeCard {
@@ -472,9 +474,46 @@ export const QUICK_STATS = [
   { value: "50+", label: "Spot Aesthetic" },
 ];
 
-export const VIBE_CHIPS = [
-  { id: "aesthetic", label: "Spot Aesthetic", emoji: "📸" },
-  { id: "chill", label: "Vibe Chill", emoji: "🌊" },
-  { id: "adventure", label: "Adventure Mode", emoji: "🧗" },
-  { id: "zen", label: "Zen Corner", emoji: "🍃" },
+export interface VibeChip {
+  id: string;
+  categoryKey: "Beach Vibes" | "Nature Escape" | "Culture & Heritage" | "Cafe & Chill";
+  label: string;
+  subtitle: string;
+  spotCount: number;
+  highlight: string;
+}
+
+export const VIBE_CHIPS: VibeChip[] = [
+  {
+    id: "beach",
+    categoryKey: "Beach Vibes",
+    label: "Pesisir & Sunset",
+    subtitle: "Uluwatu, Penida & Melasti",
+    spotCount: 4,
+    highlight: "Ombak & Tebing",
+  },
+  {
+    id: "nature",
+    categoryKey: "Nature Escape",
+    label: "Alam & Hijau",
+    subtitle: "Ubud, Sawah & Mist Walk",
+    spotCount: 3,
+    highlight: "Hening & Hutan",
+  },
+  {
+    id: "culture",
+    categoryKey: "Culture & Heritage",
+    label: "Budaya & Pura",
+    subtitle: "Tirta Gangga & Karangasem",
+    spotCount: 3,
+    highlight: "Pura Suci & Tradisi",
+  },
+  {
+    id: "cafe",
+    categoryKey: "Cafe & Chill",
+    label: "Kafe & Santai",
+    subtitle: "Canggu & Work from Bali",
+    spotCount: 2,
+    highlight: "Kopi Lokal & Sawah",
+  },
 ];

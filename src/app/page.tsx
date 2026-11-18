@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
-import ExploreCarousel from "@/components/ExploreCarousel";
+import ExploreCarousel, { TabType } from "@/components/ExploreCarousel";
 import HowItWorks from "@/components/HowItWorks";
 import FomoBanner from "@/components/FomoBanner";
 import ArticlesSection from "@/components/ArticlesSection";
@@ -17,7 +17,7 @@ import WishlistDrawer from "@/components/WishlistDrawer";
 import { Spot } from "@/data/mockData";
 
 export default function HomePage() {
-  const [selectedVibe, setSelectedVibe] = useState<string | null>("aesthetic");
+  const [selectedVibe, setSelectedVibe] = useState<TabType>("Beach Vibes");
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
   const [isMiminOpen, setIsMiminOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
@@ -26,14 +26,6 @@ export default function HomePage() {
     "monkey-forest",
     "tegalalang",
   ]);
-
-  const handleSelectVibe = (vibeId: string) => {
-    setSelectedVibe(vibeId);
-    const exploreSection = document.getElementById("explore");
-    if (exploreSection) {
-      exploreSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const handleToggleSaveSpot = (spot: Spot) => {
     setSavedSpotIds((prev) =>
@@ -72,8 +64,6 @@ export default function HomePage() {
 
         {/* Hero Section */}
         <Hero
-          selectedVibe={selectedVibe}
-          onSelectVibe={handleSelectVibe}
           onExploreClick={handleExploreScroll}
           onGalleryClick={handleGalleryScroll}
         />
@@ -83,6 +73,8 @@ export default function HomePage() {
 
         {/* Vibe Selection & Carousel Section */}
         <ExploreCarousel
+          activeTab={selectedVibe}
+          onTabChange={setSelectedVibe}
           onSelectSpot={(spot) => setSelectedSpot(spot)}
           onSaveSpot={handleToggleSaveSpot}
           savedSpotIds={savedSpotIds}

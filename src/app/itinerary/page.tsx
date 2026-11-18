@@ -40,6 +40,7 @@ export default function ItineraryPage() {
     updateSlotNotes,
     resolveTrafficWarning,
     addBestie,
+    resetToDefault,
   } = useTripStore();
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -53,15 +54,28 @@ export default function ItineraryPage() {
   const [showAddBestieModal, setShowAddBestieModal] = useState(false);
   const [newBestieName, setNewBestieName] = useState("");
 
-  const activeDay = trip.days[trip.activeDayIndex] || trip.days[0];
+  const activeDay =
+    trip.days[trip.activeDayIndex] ||
+    trip.days[0] || {
+      dayNumber: 1,
+      dateLabel: "14 Mei",
+      title: "Uluwatu Coastline",
+      region: "Bukit & Uluwatu",
+      stayArea: "Bingin / Pecatu",
+      totalKm: 28.4,
+      totalDriveTime: "1j 45m",
+      slots: [],
+    };
 
-  // Calculate day total entry/activity costs
+  // Calculate day total entry/activity costs with budgetTier adjustments
   const dayActivityCost = activeDay.slots.reduce((sum, s) => sum + s.costNum, 0);
-  const stayCostPerPerson = 350000;
-  const transportCostPerPerson = 60000;
-  const foodEstimatePerPerson = 125000;
+  const budgetTier = trip.budgetTier || 2;
+  const stayCostPerPerson = budgetTier === 1 ? 150000 : budgetTier === 3 ? 1200000 : 350000;
+  const transportCostPerPerson = budgetTier === 1 ? 35000 : budgetTier === 3 ? 200000 : 60000;
+  const foodEstimatePerPerson = budgetTier === 1 ? 65000 : budgetTier === 3 ? 300000 : 125000;
   const totalCostPerPerson =
     stayCostPerPerson + transportCostPerPerson + foodEstimatePerPerson + dayActivityCost;
+  const totalGroupCost = totalCostPerPerson * trip.partySize;
 
   const handleSaveTitle = () => {
     if (titleInput.trim()) {
@@ -112,6 +126,40 @@ export default function ItineraryPage() {
 
       {/* Main Layout Container */}
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8 space-y-6">
+        {/* Planner Sync Banner */}
+        {trip.source === "planner" && (
+          <div className="p-4 rounded-2xl bg-teal-50 border border-brand-teal/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-200">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-brand-teal flex items-center justify-center text-brand-dark flex-shrink-0">
+                <CheckCircle2 className="w-4 h-4 text-brand-dark" />
+              </div>
+              <div>
+                <span className="font-extrabold text-brand-deepTeal">
+                  Tersinkronisasi Otomatis dari Trip Planner
+                </span>
+                <p className="text-brand-secondary text-[11px]">
+                  Rencana {trip.days.length} Hari · {trip.partySize} Orang ({trip.travelerNames.join(", ")}) · Tersimpan aman di browser
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+              <Link
+                href="/planner"
+                className="flex-1 sm:flex-initial text-center px-3.5 py-1.5 rounded-xl bg-white border border-brand-teal/40 text-brand-deepTeal font-bold hover:bg-teal-100 transition text-[11px]"
+              >
+                Ubah di Planner
+              </Link>
+              <button
+                type="button"
+                onClick={() => resetToDefault()}
+                className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gray-100 text-gray-600 hover:text-brand-dark transition text-[11px] font-medium"
+              >
+                Reset ke Template Awal
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Top Header Card: Trip Title & Meta Actions */}
         <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-soft space-y-5">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
@@ -487,6 +535,7 @@ export default function ItineraryPage() {
             {/* Sequential Map Route */}
             <ItineraryRouteMap
               slots={activeDay.slots}
+              dayTitle={activeDay.title}
               activeSlotId={activeSlotId || undefined}
               onSelectSlot={(id) => setActiveSlotId(id)}
             />
@@ -506,7 +555,9 @@ export default function ItineraryPage() {
               <div className="space-y-2.5 text-xs">
                 <div className="flex items-center justify-between text-brand-secondary">
                   <span>Akomodasi ({activeDay.stayArea})</span>
-                  <span className="font-mono font-semibold text-brand-dark">Rp 350.000</span>
+                  <span className="font-mono font-semibold text-brand-dark">
+                    Rp {stayCostPerPerson.toLocaleString("id-ID")}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-brand-secondary">
                   <span>Tiket Atraksi & Masuk ({activeDay.slots.length} spot)</span>
@@ -515,12 +566,16 @@ export default function ItineraryPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-brand-secondary">
-                  <span>Transportasi (Sewa Motor + Bensin)</span>
-                  <span className="font-mono font-semibold text-brand-dark">Rp 60.000</span>
+                  <span>Transportasi (Motor / Mobil)</span>
+                  <span className="font-mono font-semibold text-brand-dark">
+                    Rp {transportCostPerPerson.toLocaleString("id-ID")}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-brand-secondary">
                   <span>Makan & Cafe Chill</span>
-                  <span className="font-mono font-semibold text-brand-dark">Rp 125.000</span>
+                  <span className="font-mono font-semibold text-brand-dark">
+                    Rp {foodEstimatePerPerson.toLocaleString("id-ID")}
+                  </span>
                 </div>
 
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between font-bold text-sm text-brand-dark">
@@ -529,6 +584,14 @@ export default function ItineraryPage() {
                     Rp {totalCostPerPerson.toLocaleString("id-ID")}
                   </span>
                 </div>
+                {trip.partySize > 1 && (
+                  <div className="flex items-center justify-between text-[11px] text-brand-secondary pt-1">
+                    <span>Estimasi Rombongan ({trip.partySize} Orang):</span>
+                    <span className="font-mono font-semibold text-brand-dark">
+                      Rp {totalGroupCost.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

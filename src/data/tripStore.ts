@@ -779,7 +779,7 @@ const DAY_BLUEPRINTS: Omit<DayPlan, "dayNumber" | "dateLabel">[] = [
   },
 ];
 
-function buildDynamicDays(
+export function buildDynamicDays(
   durationDays: number,
   startDayNum: number,
   basecampArea?: string
@@ -882,6 +882,62 @@ export function generateTripFromPlanner(params: PlannerSyncParams): TripState {
     budgetTier,
     basecampArea,
     savedAt: new Date().toISOString(),
+  };
+}
+
+export function buildTripShareUrl(trip: TripState, origin: string = ""): string {
+  const daysCount = trip.days?.length || trip.durationDays || 5;
+  const startDay = parseInt(trip.days?.[0]?.dateLabel?.replace(/[^0-9]/g, "") || "14", 10) || 14;
+  const params = new URLSearchParams();
+  params.set("days", String(daysCount));
+  params.set("party", String(trip.partySize || 4));
+  params.set("group", trip.groupType || "group");
+  params.set("budget", String(trip.budgetTier || 2));
+  if (trip.selectedVibeIds && trip.selectedVibeIds.length > 0) {
+    params.set("vibes", trip.selectedVibeIds.join(","));
+  }
+  params.set("start", String(startDay));
+  if (trip.basecampArea) {
+    params.set("basecamp", trip.basecampArea);
+  }
+  const queryString = params.toString();
+  return `${origin}/itinerary?${queryString}`;
+}
+
+export function parseTripFromSearchParams(
+  searchParams: { get: (key: string) => string | null } | URLSearchParams
+): PlannerSyncParams | null {
+  const daysStr = searchParams.get("days");
+  if (!daysStr) return null;
+  const durationDays = parseInt(daysStr, 10);
+  if (isNaN(durationDays) || durationDays <= 0) return null;
+
+  const partyStr = searchParams.get("party");
+  const peopleCount = partyStr ? parseInt(partyStr, 10) || 4 : 4;
+
+  const groupType = searchParams.get("group") || "group";
+
+  const budgetStr = searchParams.get("budget");
+  const budgetTier = budgetStr ? parseInt(budgetStr, 10) || 2 : 2;
+
+  const vibesStr = searchParams.get("vibes");
+  const selectedVibeIds = vibesStr
+    ? vibesStr.split(",").map((s) => s.trim()).filter(Boolean)
+    : ["beach-sunset", "nature-jungle"];
+
+  const startStr = searchParams.get("start");
+  const selectedStartDate = startStr ? parseInt(startStr, 10) || 14 : 14;
+
+  const basecampArea = searchParams.get("basecamp") || "Canggu + Ubud";
+
+  return {
+    durationDays,
+    peopleCount,
+    groupType,
+    budgetTier,
+    selectedVibeIds,
+    selectedStartDate,
+    basecampArea,
   };
 }
 

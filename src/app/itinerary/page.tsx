@@ -1,15 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import MiminModal from "@/components/MiminModal";
 import WishlistDrawer from "@/components/WishlistDrawer";
 import ItineraryRouteMap from "@/components/itinerary/ItineraryRouteMap";
-import { useTripStore, ItinerarySlot } from "@/data/tripStore";
+import {
+  useTripStore,
+  ItinerarySlot,
+  buildTripShareUrl,
+  parseTripFromSearchParams,
+} from "@/data/tripStore";
 import {
   Share2,
   Download,
@@ -30,9 +36,10 @@ import {
   Compass,
   X,
   Plus,
+  Printer,
 } from "lucide-react";
 
-export default function ItineraryPage() {
+function ItineraryContent() {
   const {
     trip,
     updateTitle,
@@ -41,7 +48,10 @@ export default function ItineraryPage() {
     resolveTrafficWarning,
     addBestie,
     resetToDefault,
+    syncFromPlanner,
   } = useTripStore();
+
+  const searchParams = useSearchParams();
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState(trip.title);
@@ -53,6 +63,23 @@ export default function ItineraryPage() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [showAddBestieModal, setShowAddBestieModal] = useState(false);
   const [newBestieName, setNewBestieName] = useState("");
+
+  // Sync title when store title changes
+  useEffect(() => {
+    setTitleInput(trip.title);
+  }, [trip.title]);
+
+  // Synchronize trip from URL query params (e.g. ?days=7&party=4...)
+  useEffect(() => {
+    if (searchParams) {
+      const parsed = parseTripFromSearchParams(searchParams);
+      if (parsed) {
+        if (trip.days.length !== parsed.durationDays || trip.source !== "planner") {
+          syncFromPlanner(parsed);
+        }
+      }
+    }
+  }, [searchParams, syncFromPlanner, trip.days.length, trip.source]);
 
   const activeDay =
     trip.days[trip.activeDayIndex] ||
@@ -86,7 +113,9 @@ export default function ItineraryPage() {
 
   const handleCopyShareLink = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+      const shareUrl = buildTripShareUrl(trip, window.location.origin);
+      navigator.clipboard.writeText(shareUrl);
+      window.history.replaceState({}, "", shareUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     }
@@ -120,7 +149,7 @@ export default function ItineraryPage() {
   return (
     <div className="min-h-screen bg-[#F6F8F8] text-brand-dark flex flex-col">
       {/* Top Floating Liquid Navbar */}
-      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 pt-2">
+      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 pt-2 print:hidden">
         <Navbar onOpenMimin={() => setIsMiminOpen(true)} />
       </div>
 
@@ -128,7 +157,7 @@ export default function ItineraryPage() {
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-8 space-y-6">
         {/* Planner Sync Banner */}
         {trip.source === "planner" && (
-          <div className="p-4 rounded-2xl bg-teal-50 border border-brand-teal/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-200">
+          <div className="p-4 rounded-2xl bg-teal-50 border border-brand-teal/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs animate-in fade-in duration-200 print:hidden">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-full bg-brand-teal flex items-center justify-center text-brand-dark flex-shrink-0">
                 <CheckCircle2 className="w-4 h-4 text-brand-dark" />
@@ -160,8 +189,116 @@ export default function ItineraryPage() {
           </div>
         )}
 
-        {/* Top Header Card: Trip Title & Meta Actions */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-soft space-y-5">
+        {/* PRINT-ONLY COMPREHENSIVE ITINERARY BOOKLET (Renders ALL 7 Days sequentially for PDF export & Window.print) */}
+        <div className="hidden print:block text-black bg-white space-y-6 font-sans">
+          {/* Print Document Header */}
+          <div className="border-b-2 border-black pb-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-black uppercase tracking-tight text-black">
+                  KelanaBali · Itinerary Perjalanan Resmi
+                </h1>
+                <p className="text-xs text-gray-600 font-mono">
+                  Kurasi Lokal Bali Anti-Wacana · Tanggal Export: {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="inline-block text-xs font-mono font-bold px-3 py-1 bg-black text-white rounded">
+                  VERIFIED PLAN · {trip.days.length} HARI
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <h2 className="text-xl font-black text-black">{trip.title}</h2>
+              <div className="flex flex-wrap gap-4 text-xs text-gray-700 mt-1.5 font-medium">
+                <span>📅 <strong>Durasi & Tanggal:</strong> {trip.datesLabel} ({trip.days.length} Hari {trip.days.length - 1} Malam)</span>
+                <span>👥 <strong>Traveler:</strong> {trip.partySize} Orang ({trip.travelerNames.join(", ")})</span>
+                <span>💰 <strong>Budget Tier:</strong> {budgetTier === 1 ? "Backpacker Hemat" : budgetTier === 3 ? "Luxury Indulgence" : "Mid-Range Comfort"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sequential Day-by-Day Print Sections (ALL DAYS) */}
+          <div className="space-y-6">
+            {trip.days.map((day) => {
+              const dayTotalActivity = day.slots.reduce((sum, s) => sum + s.costNum, 0);
+              const dayTotalEst = stayCostPerPerson + transportCostPerPerson + foodEstimatePerPerson + dayTotalActivity;
+
+              return (
+                <div key={day.dayNumber} className="print-avoid-break border border-gray-300 rounded-xl p-4 space-y-3 bg-white">
+                  {/* Day Header */}
+                  <div className="flex items-start justify-between border-b border-gray-200 pb-2">
+                    <div>
+                      <span className="text-[11px] font-mono font-extrabold uppercase text-gray-600 tracking-wider">
+                        HARI {day.dayNumber} · {day.dateLabel}
+                      </span>
+                      <h3 className="text-base font-bold text-black mt-0.5">{day.title}</h3>
+                    </div>
+                    <div className="text-right text-xs text-gray-700">
+                      <div>Wilayah: <strong>{day.region}</strong></div>
+                      <div>Basecamp: <strong>{day.stayArea}</strong> · Total Rute: <strong>{day.totalKm} km</strong> ({day.totalDriveTime})</div>
+                    </div>
+                  </div>
+
+                  {/* Day Timeline Spots */}
+                  <div className="space-y-2 pt-1">
+                    {day.slots.map((slot, sIdx) => (
+                      <div key={slot.id} className="text-xs p-2.5 rounded-lg bg-gray-50 border border-gray-200 space-y-1">
+                        <div className="flex items-center justify-between font-bold text-black">
+                          <span className="font-mono">
+                            #{sIdx + 1} [{slot.timeSlot}] {slot.timeRange} — {slot.title}
+                          </span>
+                          <span className="text-gray-800 font-mono font-semibold">{slot.entryFee}</span>
+                        </div>
+
+                        <div className="text-gray-600 text-[11px] flex items-center gap-2">
+                          <span>📍 {slot.location}</span>
+                          <span>·</span>
+                          <span>Kategori: {slot.category}</span>
+                        </div>
+
+                        <div className="text-gray-800 italic text-[11px] bg-white p-2 rounded border border-gray-100">
+                          &ldquo;{slot.notes}&rdquo;
+                        </div>
+
+                        {slot.transitToNext && (
+                          <div className="text-[10px] text-gray-500 font-mono pt-0.5">
+                            ➔ Menuju spot berikutnya: Motor {slot.transitToNext.motorMins} mnt / Mobil {slot.transitToNext.carMins} mnt ({slot.transitToNext.distanceKm} km)
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Traffic Warning if any */}
+                  {day.trafficWarning && (
+                    <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+                      ⚠️ <strong>Peringatan Lalu Lintas:</strong> {day.trafficWarning.message}
+                    </div>
+                  )}
+
+                  {/* Day Cost Summary */}
+                  <div className="flex items-center justify-between text-xs font-bold text-gray-800 pt-1.5 border-t border-gray-200">
+                    <span>Estimasi Anggaran Hari {day.dayNumber}:</span>
+                    <span className="font-mono text-black">
+                      Rp {dayTotalEst.toLocaleString("id-ID")} / orang (Tiket Spot: Rp {dayTotalActivity.toLocaleString("id-ID")})
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Print Document Footer */}
+          <div className="border-t-2 border-black pt-3 flex items-center justify-between text-[11px] text-gray-600 font-mono">
+            <span>KelanaBali Travel Companion · https://kelanabali.com</span>
+            <span>Hotline Konsultasi Lokal Mimin Putu: +62 812-3456-7890</span>
+          </div>
+        </div>
+
+        {/* Top Header Card: Trip Title & Meta Actions (Screen Only) */}
+        <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-soft space-y-5 print:hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
             {/* Left: Title & Travelers info */}
             <div className="space-y-2 max-w-3xl">
@@ -330,7 +467,7 @@ export default function ItineraryPage() {
         </section>
 
         {/* Two-Column Workspace: 60% Timeline / 40% Map & Budget Engine */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start print:hidden">
           {/* Left Column: Timeline Slots (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Traffic Congestion Alert (If active on day) */}
@@ -657,14 +794,18 @@ export default function ItineraryPage() {
       )}
 
       {/* Footer */}
-      <Footer />
+      <div className="print:hidden">
+        <Footer />
+      </div>
 
       {/* Mobile Bottom Floating App Dock */}
-      <MobileBottomNav
-        onOpenMimin={() => setIsMiminOpen(true)}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        savedCount={3}
-      />
+      <div className="print:hidden">
+        <MobileBottomNav
+          onOpenMimin={() => setIsMiminOpen(true)}
+          onOpenWishlist={() => setIsWishlistOpen(true)}
+          savedCount={3}
+        />
+      </div>
 
       {/* Mimin Modal */}
       <MiminModal
@@ -687,6 +828,20 @@ export default function ItineraryPage() {
         }}
       />
     </div>
+  );
+}
+
+export default function ItineraryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F6F8F8] flex items-center justify-center text-xs text-brand-secondary font-mono">
+          Memuat Itinerary KelanaBali...
+        </div>
+      }
+    >
+      <ItineraryContent />
+    </Suspense>
   );
 }
 

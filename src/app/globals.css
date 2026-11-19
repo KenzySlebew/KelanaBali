@@ -37,3 +37,35 @@ body {
   -webkit-backdrop-filter: blur(8px);
 }
 
+/* Print Styles for Itinerary Export */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+  
+  html, body {
+    background: #ffffff !important;
+    color: #0f1414 !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .print-avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Force display of print container and hide screen chrome */
+  header, nav, footer, .no-print {
+    display: none !important;
+  }
+}
+
+

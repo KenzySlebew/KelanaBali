@@ -10,7 +10,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import MiminModal from "@/components/MiminModal";
 import WishlistDrawer from "@/components/WishlistDrawer";
 import SpotModal from "@/components/SpotModal";
-import { useTripStore } from "@/data/tripStore";
+import { useTripStore, buildDynamicDays, buildTripShareUrl } from "@/data/tripStore";
 import {
   PLANNER_VIBE_CARDS,
   GROUP_TYPES,
@@ -100,62 +100,13 @@ export default function PlannerPage() {
 
   const currentBudget = budgetLabels.find((b) => b.tier === budgetTier) || budgetLabels[1];
 
-  // Itinerary generation based on duration and selected vibes
-  const itineraryDays = [
-    {
-      day: 1,
-      title: "Hari 1: Welcome to Bali & Sunset Uluwatu",
-      stay: "Ubud / Canggu",
-      slots: [
-        { time: "11:00 WITA", spot: "Landing di Bandara Ngurah Rai & Check-in", tag: "Airport Transit" },
-        { time: "14:30 WITA", spot: "Nyang Nyang Beach & Limestone Cliff", tag: "Beach Vibes" },
-        { time: "17:15 WITA", spot: "Sunset Chill di Suluban Cave", tag: "Sunset Moment" },
-      ],
-    },
-    {
-      day: 2,
-      title: "Hari 2: Ubud Emerald Nature & Sawah Tingkat",
-      stay: "Ubud",
-      slots: [
-        { time: "06:30 WITA", spot: "Campuhan Ridge Walk (Morning Mist Walk)", tag: "Zen Chill" },
-        { time: "09:00 WITA", spot: "Tegalalang Rice Terrace & Giant Swing", tag: "Nature Escape" },
-        { time: "14:00 WITA", spot: "Monkey Forest Ubud & Cafe Sanctuary", tag: "Top Nature" },
-      ],
-    },
-    {
-      day: 3,
-      title: "Hari 3: Island Adventure ke Nusa Penida",
-      stay: "Nusa Penida / Sanur",
-      slots: [
-        { time: "07:30 WITA", spot: "Fastboat Sanur ke Nusa Penida", tag: "Boat Cross" },
-        { time: "10:00 WITA", spot: "Kelingking Beach T-Rex Cliff Panorama", tag: "Iconic Panorama" },
-        { time: "15:00 WITA", spot: "Crystal Bay Snorkeling & Coconut Chill", tag: "Beach Vibes" },
-      ],
-    },
-    {
-      day: 4,
-      title: "Hari 4: Heritage & Pura Air Sakral",
-      stay: "Canggu",
-      slots: [
-        { time: "08:00 WITA", spot: "Tirta Gangga Water Palace Koi Pond", tag: "Culture & Heritage" },
-        { time: "13:30 WITA", spot: "Cafe Hopping & Iced Americano di Pererenan", tag: "Social & Trendy" },
-        { time: "17:30 WITA", spot: "Catching Sunset di Pantai Canggu", tag: "Sunset Vibe" },
-      ],
-    },
-    {
-      day: 5,
-      title: "Hari 5: Souvenir Hunting & Sayonara Bali",
-      stay: "Departure",
-      slots: [
-        { time: "09:00 WITA", spot: "Belanja Oleh-oleh Pie Susu & Kopi Kintamani", tag: "Souvenir" },
-        { time: "12:00 WITA", spot: "Cus ke Airport Ngurah Rai", tag: "Departure" },
-      ],
-    },
-  ].slice(0, durationDays);
+  // Itinerary dynamic generation based on duration and selected vibes (supports 3, 4, 5, 7+ days)
+  const previewDays = buildDynamicDays(durationDays, selectedStartDate, "Canggu + Ubud");
 
   const handleCopyShareLink = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+      const shareUrl = `${window.location.origin}/itinerary?days=${durationDays}&party=${peopleCount}&group=${groupType}&budget=${budgetTier}&vibes=${selectedVibeIds.join(",")}&start=${selectedStartDate}`;
+      navigator.clipboard.writeText(shareUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     }
@@ -751,27 +702,7 @@ export default function PlannerPage() {
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {(trip.days && trip.days.length > 0 ? trip.days : itineraryDays.slice(0, durationDays).map((d, i) => ({
-                    dayNumber: d.day,
-                    dateLabel: `${selectedStartDate + i} Mei`,
-                    title: d.title,
-                    stayArea: d.stay,
-                    slots: d.slots.map((s, sIdx) => ({
-                      id: `slot-${i}-${sIdx}`,
-                      timeSlot: "Pagi" as const,
-                      timeRange: s.time,
-                      spotId: s.spot,
-                      title: s.spot,
-                      category: s.tag,
-                      location: d.stay,
-                      image: "/images/image_30.jpg",
-                      entryFee: "Gratis",
-                      costNum: 0,
-                      notes: "",
-                    })),
-                    totalKm: 25,
-                    totalDriveTime: "1j 30m",
-                  }))).map((d) => (
+                  {(trip.days && trip.days.length === durationDays ? trip.days : previewDays).map((d) => (
                     <div
                       key={d.dayNumber}
                       className="p-5 rounded-2xl bg-white border border-gray-200/80 shadow-xs space-y-3 flex flex-col justify-between"
@@ -833,7 +764,9 @@ export default function PlannerPage() {
                         selectedStartDate,
                         basecampArea: "Canggu + Ubud",
                       });
-                      router.push("/itinerary");
+                      router.push(
+                        `/itinerary?days=${durationDays}&party=${peopleCount}&group=${groupType}&budget=${budgetTier}&vibes=${selectedVibeIds.join(",")}&start=${selectedStartDate}`
+                      );
                     }}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-brand-teal hover:bg-teal-300 text-brand-dark text-xs sm:text-sm font-extrabold shadow-md transition"
                   >

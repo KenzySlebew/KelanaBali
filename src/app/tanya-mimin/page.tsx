@@ -21,6 +21,7 @@ import {
   Phone,
   Send,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 
 export default function TanyaMiminPage() {
@@ -35,6 +36,7 @@ export default function TanyaMiminPage() {
   const [phoneNumber, setPhoneNumber] = useState<string>("081234567890");
   const [contactMethod, setContactMethod] = useState<"whatsapp" | "email">("whatsapp");
   const [requestSent, setRequestSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const topicsList = [
     {
@@ -89,7 +91,11 @@ export default function TanyaMiminPage() {
 
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    setRequestSent(true);
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setRequestSent(true);
+    }, 400);
   };
 
   const handleDirectWhatsApp = () => {
@@ -166,6 +172,46 @@ export default function TanyaMiminPage() {
                   Pilih topik dan sampaikan kebutuhan perjalanan teman-teman.
                 </p>
               </div>
+
+              {/* Request Received Success Banner */}
+              {requestSent && (
+                <div className="p-5 rounded-2xl bg-teal-50 border-2 border-brand-teal/40 space-y-3.5 animate-in fade-in duration-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-brand-teal flex items-center justify-center text-brand-dark flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-5 h-5 text-brand-dark" />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-brand-deepTeal">
+                        STATUS: PERMINTAAN DITERIMA OLEH MIMIN PUTU
+                      </span>
+                      <h4 className="text-sm sm:text-base font-extrabold text-brand-dark">
+                        Permintaanmu Berhasil Dikirim ke Mimin Putu!
+                      </h4>
+                      <p className="text-xs text-brand-secondary leading-relaxed">
+                        Mimin Putu sedang meninjau draf <strong>{trip.title}</strong> ({trip.days.length} Hari, {trip.partySize} Orang). Catatanmu: &ldquo;{userNotes}&rdquo; sudah kami terima. Tim kami akan mengirimkan catatan rekomendasi & hasil review ke WhatsApp <strong>{phoneNumber}</strong> dalam ~10 menit.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleDirectWhatsApp}
+                      className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition shadow-sm"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Buka Chat WhatsApp Sekarang</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRequestSent(false)}
+                      className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-brand-dark text-xs font-medium transition"
+                    >
+                      Kirim Pertanyaan Lain
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleSendRequest} className="space-y-5">
                 {/* 1. Pilih Topik */}
@@ -300,10 +346,25 @@ export default function TanyaMiminPage() {
                 {/* Submit Action */}
                 <button
                   type="submit"
-                  className="w-full py-3.5 px-6 rounded-xl bg-brand-pillDark hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:shadow transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 px-6 rounded-xl bg-brand-pillDark hover:bg-black text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md hover:shadow transition focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:outline-none disabled:opacity-80"
                 >
-                  <Send className="w-4 h-4 text-brand-teal" />
-                  <span>Kirim Permintaan ke Mimin Putu · Estimasi 10 Menit</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-brand-teal animate-spin" />
+                      <span>Mengirim Permintaan ke Mimin Putu...</span>
+                    </>
+                  ) : requestSent ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-brand-teal" />
+                      <span>Permintaan Terkirim! Ingin Kirim Ulang?</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 text-brand-teal" />
+                      <span>Kirim Permintaan ke Mimin Putu · Estimasi 10 Menit</span>
+                    </>
+                  )}
                 </button>
               </form>
             </div>
@@ -331,11 +392,11 @@ export default function TanyaMiminPage() {
               <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-brand-surface border border-gray-200/60 text-[11px]">
                 <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Draf Masuk</span>
+                  <span>Draf Masuk {requestSent ? "✓" : ""}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-brand-deepTeal font-bold">
-                  <Clock className="w-3.5 h-3.5 text-brand-teal animate-spin" />
-                  <span>Ditinjau</span>
+                <div className={`flex items-center gap-1.5 font-bold ${requestSent ? "text-brand-deepTeal" : "text-brand-deepTeal"}`}>
+                  <Clock className={`w-3.5 h-3.5 text-brand-teal ${requestSent ? "animate-spin" : ""}`} />
+                  <span>{requestSent ? "Sedang Ditinjau..." : "Ditinjau"}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-brand-dark font-bold">
                   <span className="w-2 h-2 rounded-full bg-brand-teal" />
